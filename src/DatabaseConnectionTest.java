@@ -1,3 +1,7 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
 public class DatabaseConnectionTest {
 
     public static void main(String[] args){
@@ -7,11 +11,11 @@ public class DatabaseConnectionTest {
         String password = "";
 
         try{
-            java.sql.Connection connection = java.sql.DriverManager.getConnection(url, user, password);
+            Connection connection = DriverManager.getConnection(url, user, password);
             System.out.println("Successfully connected to the PostgreSQL database!");
 
             connection.close();
-        } catch (java.sql.SQLException e){
+        } catch (SQLException e){
 
             System.out.println("Database connection failed!");
             e.printStackTrace();
