@@ -1,4 +1,5 @@
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.SQLException;
 
@@ -32,6 +33,30 @@ public class PostgresStudentRepository implements StudentRepository {
     }
     @Override
     public void save(Student student) {
+
+        // 1. The SQL string with ? placeholders
+        String insertSQL = "INSERT INTO students (student_id, name) VALUES (?, ?);";
+
+        try {
+            Connection connection = DatabaseManager.getConnection();
+
+            // 2. PreparedStatement securely locks the SQL structure in place
+            PreparedStatement preparedStatement = connection.prepareStatement(insertSQL);
+
+            // 3. We fill in the placeholders (Index 1 is the first ?, Index 2 is the second)
+            preparedStatement.setInt(1, student.getStudentID());
+            preparedStatement.setString(2, student.getName());
+
+            // 4. Send the data to the database
+            preparedStatement.executeUpdate();
+
+            System.out.println("Student safely stored in PostgreSQL!");
+            connection.close();
+
+        } catch (SQLException e) {
+            System.out.println("Database write failed.");
+            e.printStackTrace();
+        }
 
     }
 
