@@ -16,7 +16,7 @@ public class Main {
 //        moved this array list to the inmemoryRepository class and call the intialize the inmemory repository in main class
 //        List<Student> students = new ArrayList<>();
 
-        StudentRepository repository = new InMemoryRepository();
+        StudentRepository repository = new PostgresStudentRepository();
 
 //        students.add(firstStudent);
 //        students.add(secondStudent);
