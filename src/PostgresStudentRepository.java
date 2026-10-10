@@ -1,7 +1,4 @@
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class PostgresStudentRepository implements StudentRepository {
 
@@ -62,6 +59,31 @@ public class PostgresStudentRepository implements StudentRepository {
 
     @Override
     public void displayAll() {
+
+        String selectSQL = "SELECT * FROM students;";
+
+        try{
+            Connection connection = DatabaseManager.getConnection();
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery(selectSQL);
+
+            System.out.println("\n--- Registered Students (Database) ---");
+
+            while (resultSet.next()){
+
+                int studentID = resultSet.getInt("student_id");
+                String name = resultSet.getString("name");
+
+                System.out.println(studentID + " " + name);
+            }
+
+            connection.close();
+
+        } catch (SQLException e) {
+            System.out.println("Failed to fetch students from database.");
+            e.printStackTrace();
+        }
 
     }
 }
