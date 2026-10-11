@@ -12,6 +12,10 @@ public class Student {
         return studentID;
     }
 
+    public String getName(){
+        return name;
+    }
+
     @Override
     public String toString(){
         return "Student Name : " + this.name + ", Student ID : " + this.studentID;

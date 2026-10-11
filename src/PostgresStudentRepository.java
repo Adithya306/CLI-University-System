@@ -38,6 +38,33 @@ public class PostgresStudentRepository implements StudentRepository {
     @Override
     public void save(Student student) {
 
+        if (student instanceof Tutor){
+
+            Tutor tutor = (Tutor) student;
+
+            String insertSQL = "INSERT INTO tutors (tutor_id, name, specialization) VALUES (?,?,?))" ;
+
+            try {
+                Connection connection = DatabaseManager.getConnection();
+
+                PreparedStatement preparedStatement = connection.prepareStatement(insertSQL);
+
+                preparedStatement.setInt(1,tutor.getStudentID());
+                preparedStatement.setString(2, tutor.getName());
+                preparedStatement.setString(3,tutor.getSpecialization());
+
+                preparedStatement.executeUpdate();
+
+                System.out.println("Tutor has been saved successfully!");
+                connection.close();
+
+            } catch (SQLException e){
+                System.out.println("Failed to save tutor!");
+                e.printStackTrace();
+            }
+
+            } else {
+
             // 1. The SQL string with ? placeholders
             String insertSQL = "INSERT INTO students (student_id, name) VALUES (?, ?);";
 
@@ -61,7 +88,7 @@ public class PostgresStudentRepository implements StudentRepository {
                 System.out.println("Database write failed.");
                 e.printStackTrace();
             }
-
+        }
     }
 
     @Override
