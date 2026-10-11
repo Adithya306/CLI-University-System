@@ -9,7 +9,7 @@ public class PostgresStudentRepository implements StudentRepository {
                 ");";
 
         String createTutorTableSQL = "CREATE TABLE IF NOT EXISTS tutors ("+
-                "tutur_id INT PRIMARY KEY, "+
+                "tutor_id INT PRIMARY KEY, "+
                 "name VARCHAR(100)," +
                 "specialization VARCHAR(100)" +
                 ");";
@@ -21,6 +21,9 @@ public class PostgresStudentRepository implements StudentRepository {
 
             // Create a statement object to carry our SQL string to the database
             Statement statement = connection.createStatement();
+
+//            TEMPORARY LINE: Delete the broken table
+//            statement.execute("DROP TABLE tutors;");
 
             // Execute the SQL
             statement.execute(createStudentTableSQL);
@@ -42,7 +45,7 @@ public class PostgresStudentRepository implements StudentRepository {
 
             Tutor tutor = (Tutor) student;
 
-            String insertSQL = "INSERT INTO tutors (tutor_id, name, specialization) VALUES (?,?,?))" ;
+            String insertSQL = "INSERT INTO tutors (tutor_id, name, specialization) VALUES (?,?,?);" ;
 
             try {
                 Connection connection = DatabaseManager.getConnection();
