@@ -3,9 +3,15 @@ import java.sql.*;
 public class PostgresStudentRepository implements StudentRepository {
 
     public PostgresStudentRepository () {
-        String createTableSQL = "CREATE TABLE IF NOT EXISTS students (" +
+        String createStudentTableSQL = "CREATE TABLE IF NOT EXISTS students (" +
                 "student_id INT PRIMARY KEY, " +
                 "name VARCHAR(100)" +
+                ");";
+
+        String createTutorTableSQL = "CREATE TABLE IF NOT EXISTS tutors ("+
+                "tutur_id INT PRIMARY KEY, "+
+                "name VARCHAR(100)," +
+                "specialization VARCHAR(100)" +
                 ");";
 
         try {
@@ -17,9 +23,10 @@ public class PostgresStudentRepository implements StudentRepository {
             Statement statement = connection.createStatement();
 
             // Execute the SQL
-            statement.execute(createTableSQL);
+            statement.execute(createStudentTableSQL);
+            statement.execute(createTutorTableSQL);
 
-            System.out.println("Database table 'students' is ready.");
+            System.out.println("Database table 'students' and 'tutor' are ready.");
             connection.close();
 
         } catch (SQLException e) {
@@ -31,29 +38,29 @@ public class PostgresStudentRepository implements StudentRepository {
     @Override
     public void save(Student student) {
 
-        // 1. The SQL string with ? placeholders
-        String insertSQL = "INSERT INTO students (student_id, name) VALUES (?, ?);";
+            // 1. The SQL string with ? placeholders
+            String insertSQL = "INSERT INTO students (student_id, name) VALUES (?, ?);";
 
-        try {
-            Connection connection = DatabaseManager.getConnection();
+            try {
+                Connection connection = DatabaseManager.getConnection();
 
-            // 2. PreparedStatement securely locks the SQL structure in place
-            PreparedStatement preparedStatement = connection.prepareStatement(insertSQL);
+                // 2. PreparedStatement securely locks the SQL structure in place
+                PreparedStatement preparedStatement = connection.prepareStatement(insertSQL);
 
-            // 3. We fill in the placeholders (Index 1 is the first ?, Index 2 is the second)
-            preparedStatement.setInt(1, student.getStudentID());
-            preparedStatement.setString(2, student.getName());
+                // 3. We fill in the placeholders (Index 1 is the first ?, Index 2 is the second)
+                preparedStatement.setInt(1, student.getStudentID());
+                preparedStatement.setString(2, student.getName());
 
-            // 4. Send the data to the database
-            preparedStatement.executeUpdate();
+                // 4. Send the data to the database
+                preparedStatement.executeUpdate();
 
-            System.out.println("Student safely stored in PostgreSQL!");
-            connection.close();
+                System.out.println("Student safely stored in PostgreSQL!");
+                connection.close();
 
-        } catch (SQLException e) {
-            System.out.println("Database write failed.");
-            e.printStackTrace();
-        }
+            } catch (SQLException e) {
+                System.out.println("Database write failed.");
+                e.printStackTrace();
+            }
 
     }
 
