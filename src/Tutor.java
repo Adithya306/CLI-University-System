@@ -2,8 +2,8 @@ public class Tutor extends Student {
 
     private String specialization;
 
-    public Tutor(String name, int ID, String specialization) {
-        super(name, ID);
+    public Tutor(String name, String specialization) {
+        super(name);
         this.specialization = specialization;
     }
 

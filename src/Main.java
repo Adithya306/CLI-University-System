@@ -58,12 +58,12 @@ public class Main {
                     try {
                         System.out.println("Enter Student Name");
                         String name = scanner.nextLine();
-                        System.out.println("Enter Student ID");
-                        int id = scanner.nextInt();
+//                        System.out.println("Enter Student ID");
+//                        int id = scanner.nextInt();
 
 //                        students.add(new Student(name, id));
 
-                        repository.save(new Student(name,id));
+                        repository.save(new Student(name));
 
                         System.out.println("Student Added successfully");
                     } catch (Exception e){
@@ -95,15 +95,15 @@ public class Main {
                         System.out.println("Enter Tutor name");
                         String name = scanner.nextLine();
 
-                        System.out.println("Enter Tutor ID");
-                        int id = scanner.nextInt();
+//                        System.out.println("Enter Tutor ID");
+//                        int id = scanner.nextInt();
 
-                        scanner.nextLine();
+//                        scanner.nextLine();
 
                         System.out.println("Enter Tutor Specialization");
                         String specialization = scanner.nextLine();
 
-                        repository.save(new Tutor(name, id, specialization));
+                        repository.save(new Tutor(name, specialization));
 
                     } catch (Exception e){
                         System.out.println(e);
