@@ -49,16 +49,16 @@ public class PostgresStudentRepository implements StudentRepository {
 
             Tutor tutor = (Tutor) student;
 
-            String insertSQL = "INSERT INTO tutors (tutor_id, name, specialization) VALUES (?,?,?);" ;
+            String insertSQL = "INSERT INTO tutors (name, specialization) VALUES (?,?);" ;
 
             try {
                 Connection connection = DatabaseManager.getConnection();
 
                 PreparedStatement preparedStatement = connection.prepareStatement(insertSQL);
 
-                preparedStatement.setInt(1,tutor.getStudentID());
-                preparedStatement.setString(2, tutor.getName());
-                preparedStatement.setString(3,tutor.getSpecialization());
+//                preparedStatement.setInt(1,tutor.getStudentID());
+                preparedStatement.setString(1, tutor.getName());
+                preparedStatement.setString(2,tutor.getSpecialization());
 
                 preparedStatement.executeUpdate();
 
@@ -73,7 +73,7 @@ public class PostgresStudentRepository implements StudentRepository {
             } else {
 
             // 1. The SQL string with ? placeholders
-            String insertSQL = "INSERT INTO students (student_id, name) VALUES (?, ?);";
+            String insertSQL = "INSERT INTO students (name) VALUES (?);";
 
             try {
                 Connection connection = DatabaseManager.getConnection();
@@ -82,8 +82,8 @@ public class PostgresStudentRepository implements StudentRepository {
                 PreparedStatement preparedStatement = connection.prepareStatement(insertSQL);
 
                 // 3. We fill in the placeholders (Index 1 is the first ?, Index 2 is the second)
-                preparedStatement.setInt(1, student.getStudentID());
-                preparedStatement.setString(2, student.getName());
+//                preparedStatement.setInt(1, student.getStudentID());
+                preparedStatement.setString(1, student.getName());
 
                 // 4. Send the data to the database
                 preparedStatement.executeUpdate();
