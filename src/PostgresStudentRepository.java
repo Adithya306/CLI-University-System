@@ -3,6 +3,8 @@ import java.sql.*;
 public class PostgresStudentRepository implements StudentRepository {
 
     public PostgresStudentRepository () {
+
+        String createSequenceSQL = "CREATE SEQUENCE IF NOT EXISTS global_user_seq START 100;";
         String createStudentTableSQL = "CREATE TABLE IF NOT EXISTS students (" +
                 "student_id INT PRIMARY KEY, " +
                 "name VARCHAR(100)" +
@@ -23,13 +25,15 @@ public class PostgresStudentRepository implements StudentRepository {
             Statement statement = connection.createStatement();
 
 //            TEMPORARY LINE: Delete the broken table
-//            statement.execute("DROP TABLE tutors;");
+            statement.execute("DROP TABLE tutors;");
+            statement.execute("DROP TABLE students;");
 
             // Execute the SQL
+            statement.execute(createSequenceSQL);
             statement.execute(createStudentTableSQL);
             statement.execute(createTutorTableSQL);
 
-            System.out.println("Database table 'students' and 'tutor' are ready.");
+            System.out.println("Database tables and sequence are ready");
             connection.close();
 
         } catch (SQLException e) {
@@ -97,7 +101,10 @@ public class PostgresStudentRepository implements StudentRepository {
     @Override
     public void displayAll() {
 
-        String selectSQL = "SELECT * FROM students;";
+        String selectSQL = "SELECT student_id AS id, name, 'Student' AS Role, 'None' AS specialization FROM students " +
+                            "UNION " +
+                            "SELECT tutor_id AS id, name, 'Tutor' AS Role, specialization FROM tutors;";
+
 
         try{
             Connection connection = DatabaseManager.getConnection();
@@ -105,14 +112,19 @@ public class PostgresStudentRepository implements StudentRepository {
 
             ResultSet resultSet = statement.executeQuery(selectSQL);
 
-            System.out.println("\n--- Registered Students (Database) ---");
+            System.out.println("\n--- Registered users (Database) ---");
 
             while (resultSet.next()){
 
-                int studentID = resultSet.getInt("student_id");
-                String name = resultSet.getString("name");
+//                int studentID = resultSet.getInt("student_id");
+//                String name = resultSet.getString("name");
 
-                System.out.println(studentID + " " + name);
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                String role = resultSet.getString("Role");
+                String specialization = resultSet.getString("specialization");
+
+                System.out.println(id + " " + name+ " " + role + " " + specialization);
             }
 
             connection.close();
