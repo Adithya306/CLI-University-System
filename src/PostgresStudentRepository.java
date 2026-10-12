@@ -6,12 +6,12 @@ public class PostgresStudentRepository implements StudentRepository {
 
         String createSequenceSQL = "CREATE SEQUENCE IF NOT EXISTS global_user_seq START 100;";
         String createStudentTableSQL = "CREATE TABLE IF NOT EXISTS students (" +
-                "student_id INT PRIMARY KEY, " +
+                "student_id INT PRIMARY KEY DEFAULT nextval('global_user_seq'), " +
                 "name VARCHAR(100)" +
                 ");";
 
         String createTutorTableSQL = "CREATE TABLE IF NOT EXISTS tutors ("+
-                "tutor_id INT PRIMARY KEY, "+
+                "tutor_id INT PRIMARY KEY DEFAULT nextval('global_user_seq'), "+
                 "name VARCHAR(100)," +
                 "specialization VARCHAR(100)" +
                 ");";
@@ -25,8 +25,9 @@ public class PostgresStudentRepository implements StudentRepository {
             Statement statement = connection.createStatement();
 
 //            TEMPORARY LINE: Delete the broken table
-            statement.execute("DROP TABLE tutors;");
-            statement.execute("DROP TABLE students;");
+//            statement.execute("DROP TABLE tutors;");
+//            statement.execute("DROP TABLE students;");
+//            statement.execute("DROP SEQUENCE IF EXISTS global_user_seq;");
 
             // Execute the SQL
             statement.execute(createSequenceSQL);
