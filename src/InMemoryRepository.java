@@ -20,4 +20,9 @@ public class InMemoryRepository implements StudentRepository{
         }
     }
 
+    @Override
+    public void findUserById(int targetId) {
+
+    }
+
 }

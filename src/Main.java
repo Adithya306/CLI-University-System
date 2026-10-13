@@ -33,6 +33,7 @@ public class Main {
             System.out.println("2. View All Students");
             System.out.println("3. Exit");
             System.out.println("4. Add Tutor");
+            System.out.println("Search user by ID");
             int choice = scanner.nextInt();
             scanner.nextLine();
 
@@ -110,6 +111,19 @@ public class Main {
                         scanner.nextLine();
                     }
 
+                }
+
+                case 5 -> {
+                    try {
+                        System.out.println("Enter User ID to Search");
+                        int searchId = scanner.nextInt();
+                        scanner.nextLine();
+
+                        repository.findUserById(searchId);
+                    } catch (Exception e) {
+                        System.out.println("Error: Invalid input.");
+                        scanner.nextLine();
+                    }
                 }
                 default -> {
                     System.out.println("Invalid choice");
