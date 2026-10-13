@@ -136,4 +136,35 @@ public class PostgresStudentRepository implements StudentRepository {
         }
 
     }
+
+    public void findUserById(int targetId){
+        String searchSQL = "SELECT student_id AS id, name, 'Student' AS role, 'None' AS specialization FROM students WHERE student_id = ? " +
+                "UNION " +
+                "SELECT tutor_id AS id, name, 'Tutor' AS role, specialization FROM tutors WHERE tutor_id = ? ;";
+
+        try {
+            Connection connection = DatabaseManager.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(searchSQL);
+
+            preparedStatement.setInt(1,targetId);
+            preparedStatement.setInt(2,targetId);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(resultSet.next()){
+
+                System.out.println("\n--- User Found ---");
+                System.out.println("ID: " + resultSet.getInt("id") +
+                        " | Name: " + resultSet.getString("name") +
+                        " | Role: " + resultSet.getString("role") +
+                        " | Specialization: " + resultSet.getString("specialization"));
+            } else {
+                System.out.println("User not found with ID: " + targetId);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Failed to find user from database.");
+            e.printStackTrace();
+        }
+    }
 }
