@@ -30,10 +30,11 @@ public class Main {
 
             System.out.println("---Kuppi CLI Menu---");
             System.out.println("1. Add Student");
-            System.out.println("2. View All Students");
+            System.out.println("2. View All Users");
             System.out.println("3. Exit");
             System.out.println("4. Add Tutor");
-            System.out.println("Search user by ID");
+            System.out.println("5. Search user by ID");
+            System.out.println("6. Delete user by ID");
             int choice = scanner.nextInt();
             scanner.nextLine();
 
@@ -120,10 +121,28 @@ public class Main {
                         scanner.nextLine();
 
                         repository.findUserById(searchId);
+
                     } catch (Exception e) {
                         System.out.println("Error: Invalid input.");
                         scanner.nextLine();
                     }
+                }
+
+                case 6 -> {
+
+                    try {
+                        System.out.println(" Enter User ID to delete user");
+                        int deleteId = scanner.nextInt();
+                        scanner.nextLine();
+
+                        repository.deleteUserById(deleteId);
+
+                    } catch (Exception e) {
+                        System.out.println("Error: Invalid input.");
+                        scanner.nextLine();
+                    }
+
+
                 }
                 default -> {
                     System.out.println("Invalid choice");

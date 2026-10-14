@@ -25,4 +25,9 @@ public class InMemoryRepository implements StudentRepository{
 
     }
 
+    @Override
+    public void deleteUserById(int targetId) {
+
+    }
+
 }
