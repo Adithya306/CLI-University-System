@@ -167,4 +167,31 @@ public class PostgresStudentRepository implements StudentRepository {
             e.printStackTrace();
         }
     }
+
+    public void deleteUserById(int targetId){
+
+        String deleteStudentSQL = "DELETE FROM students WHERE student_id = ? ;";
+        String deleteTutorSQL = "DELETE FROM tutors WHERE tutor_id = ? ;";
+
+        try {
+            Connection connection = DatabaseManager.getConnection();
+
+            PreparedStatement studentStatement = connection.prepareStatement(deleteStudentSQL);
+            studentStatement.setInt(1, targetId);
+            studentStatement.executeUpdate();
+
+            PreparedStatement tutorStatement = connection.prepareStatement(deleteTutorSQL);
+            tutorStatement.setInt(1,targetId);
+            tutorStatement.executeUpdate();
+
+
+            System.out.println("User deletion process completed");
+
+            connection.close();
+
+        } catch (SQLException e) {
+            System.out.println("Failed to delete user from database.");
+            e.printStackTrace();
+        }
+    }
 }
