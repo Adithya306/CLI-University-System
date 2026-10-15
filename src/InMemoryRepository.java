@@ -30,4 +30,9 @@ public class InMemoryRepository implements StudentRepository{
 
     }
 
+    @Override
+    public void updateUser(int targetId, String newName) {
+
+    }
+
 }

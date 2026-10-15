@@ -35,6 +35,7 @@ public class Main {
             System.out.println("4. Add Tutor");
             System.out.println("5. Search user by ID");
             System.out.println("6. Delete user by ID");
+            System.out.println("7. Update user by ID");
             int choice = scanner.nextInt();
             scanner.nextLine();
 
@@ -142,8 +143,24 @@ public class Main {
                         scanner.nextLine();
                     }
 
-
                 }
+
+                case 7 -> {
+                    try {
+                        System.out.println("Enter User ID to update:");
+                        int updateId = scanner.nextInt();
+                        scanner.nextLine(); // Clear scanner buffer trap
+
+                        System.out.println("Enter New Name:");
+                        String newName = scanner.nextLine();
+
+                        repository.updateUser(updateId, newName);
+                    } catch (Exception e) {
+                        System.out.println("Error: Invalid input.");
+                        scanner.nextLine();
+                    }
+                }
+
                 default -> {
                     System.out.println("Invalid choice");
                 }

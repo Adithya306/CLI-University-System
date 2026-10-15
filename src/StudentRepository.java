@@ -4,4 +4,6 @@ public interface StudentRepository {
     void displayAll();
     void findUserById(int targetId);
     void deleteUserById(int targetId);
+    void updateUser(int targetId, String newName);
+
 }
