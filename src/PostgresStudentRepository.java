@@ -194,4 +194,32 @@ public class PostgresStudentRepository implements StudentRepository {
             e.printStackTrace();
         }
     }
+
+    public void updateUser(int targetId, String newName) {
+        String updateStudentSQL = "UPDATE students SET name = ? WHERE student_id = ?;";
+        String updateTutorSQL = "UPDATE tutors SET name = ? WHERE tutor_id = ?;";
+
+        try {
+            Connection connection = DatabaseManager.getConnection();
+
+            // 1. Update Student table
+            PreparedStatement studentStmt = connection.prepareStatement(updateStudentSQL);
+            studentStmt.setString(1, newName);
+            studentStmt.setInt(2, targetId);
+            studentStmt.executeUpdate();
+
+            // 2. Update Tutor table
+            PreparedStatement tutorStmt = connection.prepareStatement(updateTutorSQL);
+            tutorStmt.setString(1, newName);
+            tutorStmt.setInt(2, targetId);
+            tutorStmt.executeUpdate();
+
+            System.out.println("User update process completed.");
+            connection.close();
+
+        } catch (SQLException e) {
+            System.out.println("Failed to update user in database.");
+            e.printStackTrace();
+        }
+    }
 }
