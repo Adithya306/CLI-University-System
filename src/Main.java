@@ -109,7 +109,7 @@ public class Main {
                         repository.save(new Tutor(name, specialization));
 
                     } catch (Exception e){
-                        System.out.println(e);
+                        System.out.println("Error: Invalid input");
                         scanner.nextLine();
                     }
 
@@ -147,20 +147,18 @@ public class Main {
 
                 case 7 -> {
                     try {
-                        System.out.println("Enter User ID to update:");
+                        System.out.println("Enter User ID to update user");
                         int updateId = scanner.nextInt();
-                        scanner.nextLine(); // Clear scanner buffer trap
+                        scanner.nextLine();
 
-                        System.out.println("Enter New Name:");
+                        System.out.println("Enter New name");
                         String newName = scanner.nextLine();
 
-                        repository.updateUser(updateId, newName);
+                        repository.updateUserById(updateId, newName);
                     } catch (Exception e) {
-                        System.out.println("Error: Invalid input.");
-                        scanner.nextLine();
+                        System.out.println("Error: Invalid input");
                     }
                 }
-
                 default -> {
                     System.out.println("Invalid choice");
                 }

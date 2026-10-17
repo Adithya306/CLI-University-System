@@ -195,30 +195,30 @@ public class PostgresStudentRepository implements StudentRepository {
         }
     }
 
-    public void updateUser(int targetId, String newName) {
-        String updateStudentSQL = "UPDATE students SET name = ? WHERE student_id = ?;";
+    public void updateUserById(int targetId, String newName){
+
+        String updateStudentSQL = "UPDATE students SET name = ? WHERE student_id =?;";
         String updateTutorSQL = "UPDATE tutors SET name = ? WHERE tutor_id = ?;";
 
         try {
             Connection connection = DatabaseManager.getConnection();
 
-            // 1. Update Student table
-            PreparedStatement studentStmt = connection.prepareStatement(updateStudentSQL);
-            studentStmt.setString(1, newName);
-            studentStmt.setInt(2, targetId);
-            studentStmt.executeUpdate();
+            PreparedStatement updateStudentStatement = connection.prepareStatement(updateStudentSQL);
+            updateStudentStatement.setString(1,newName);
+            updateStudentStatement.setInt(2,targetId);
+            updateStudentStatement.executeUpdate();
 
-            // 2. Update Tutor table
-            PreparedStatement tutorStmt = connection.prepareStatement(updateTutorSQL);
-            tutorStmt.setString(1, newName);
-            tutorStmt.setInt(2, targetId);
-            tutorStmt.executeUpdate();
+            PreparedStatement updateTutorStatement = connection.prepareStatement(updateTutorSQL);
+            updateTutorStatement.setString(1,newName);
+            updateTutorStatement.setInt(2,targetId);
+            updateTutorStatement.executeUpdate();
 
-            System.out.println("User update process completed.");
+            System.out.println("User modification process completed");
+
             connection.close();
 
         } catch (SQLException e) {
-            System.out.println("Failed to update user in database.");
+            System.out.println("Failed to update user from database.");
             e.printStackTrace();
         }
     }
