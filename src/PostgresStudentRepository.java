@@ -231,3 +231,56 @@ public class PostgresStudentRepository implements StudentRepository {
 //        }
 //    }
 //}
+
+
+        // =========================================================================
+        // [ENTERPRISE / TRANSACTIONAL] ACID-Compliant Execution
+        // Safety: Explicit transaction boundary. Disables auto-commit and enforces
+        // atomic execution via commit() on success and rollback() on exception.
+        // =========================================================================
+
+public void updateUserById(int targetId, String newName){
+
+            String updateStudentSQL = "UPDATE students SET name = ?, WHERE student_id = ? ;" ;
+            String updateTutorSQL = "UPDATE tutors SET name = ? , WHERE tutor_id = ? ;" ;
+            Connection connection = null;
+
+            try {
+                connection = DatabaseManager.getConnection();
+                connection.setAutoCommit(false);  //Disable auto commit
+
+                try {
+                    PreparedStatement updateStudentStatement = connection.prepareStatement(updateStudentSQL);
+                    PreparedStatement updateTutorStatement = connection.prepareStatement(updateTutorSQL);
+
+                    updateStudentStatement.setString(1, newName);
+                    updateStudentStatement.setInt(2,targetId);
+                    updateStudentStatement.executeUpdate();
+
+                    updateTutorStatement.setString(1,newName);
+                    updateTutorStatement.setInt(2,targetId);
+                    updateTutorStatement.executeUpdate();
+
+                    connection.commit(); //All or nothing Save
+                    System.out.println("User has been updated successfully!");
+                } catch (SQLException e) {
+                    if(connection != null){
+                        connection.rollback(); //rollback the partial changes
+                        System.out.println("Failed to update user!");
+                    }
+                    throw e;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+
+            } finally {
+                try {
+                    connection.setAutoCommit(true);
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+    }
+}
