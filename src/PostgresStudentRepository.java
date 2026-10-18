@@ -168,58 +168,66 @@ public class PostgresStudentRepository implements StudentRepository {
         }
     }
 
-    public void deleteUserById(int targetId){
-
-        String deleteStudentSQL = "DELETE FROM students WHERE student_id = ? ;";
-        String deleteTutorSQL = "DELETE FROM tutors WHERE tutor_id = ? ;";
-
-        try {
-            Connection connection = DatabaseManager.getConnection();
-
-            PreparedStatement studentStatement = connection.prepareStatement(deleteStudentSQL);
-            studentStatement.setInt(1, targetId);
-            studentStatement.executeUpdate();
-
-            PreparedStatement tutorStatement = connection.prepareStatement(deleteTutorSQL);
-            tutorStatement.setInt(1,targetId);
-            tutorStatement.executeUpdate();
 
 
-            System.out.println("User deletion process completed");
+    // =========================================================================
+    // [LEGACY / NON-TRANSACTIONAL] Auto-Commit Execution
+    // Risk: Vulnerable to partial writes. If Statement 1 succeeds but
+    // Statement 2 fails, the database becomes corrupt/inconsistent.
+    // =========================================================================
 
-            connection.close();
-
-        } catch (SQLException e) {
-            System.out.println("Failed to delete user from database.");
-            e.printStackTrace();
-        }
-    }
-
-    public void updateUserById(int targetId, String newName){
-
-        String updateStudentSQL = "UPDATE students SET name = ? WHERE student_id =?;";
-        String updateTutorSQL = "UPDATE tutors SET name = ? WHERE tutor_id = ?;";
-
-        try {
-            Connection connection = DatabaseManager.getConnection();
-
-            PreparedStatement updateStudentStatement = connection.prepareStatement(updateStudentSQL);
-            updateStudentStatement.setString(1,newName);
-            updateStudentStatement.setInt(2,targetId);
-            updateStudentStatement.executeUpdate();
-
-            PreparedStatement updateTutorStatement = connection.prepareStatement(updateTutorSQL);
-            updateTutorStatement.setString(1,newName);
-            updateTutorStatement.setInt(2,targetId);
-            updateTutorStatement.executeUpdate();
-
-            System.out.println("User modification process completed");
-
-            connection.close();
-
-        } catch (SQLException e) {
-            System.out.println("Failed to update user from database.");
-            e.printStackTrace();
-        }
-    }
-}
+//    public void deleteUserById(int targetId){
+//
+//        String deleteStudentSQL = "DELETE FROM students WHERE student_id = ? ;";
+//        String deleteTutorSQL = "DELETE FROM tutors WHERE tutor_id = ? ;";
+//
+//        try {
+//            Connection connection = DatabaseManager.getConnection();
+//
+//            PreparedStatement studentStatement = connection.prepareStatement(deleteStudentSQL);
+//            studentStatement.setInt(1, targetId);
+//            studentStatement.executeUpdate();
+//
+//            PreparedStatement tutorStatement = connection.prepareStatement(deleteTutorSQL);
+//            tutorStatement.setInt(1,targetId);
+//            tutorStatement.executeUpdate();
+//
+//
+//            System.out.println("User deletion process completed");
+//
+//            connection.close();
+//
+//        } catch (SQLException e) {
+//            System.out.println("Failed to delete user from database.");
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    public void updateUserById(int targetId, String newName){
+//
+//        String updateStudentSQL = "UPDATE students SET name = ? WHERE student_id =?;";
+//        String updateTutorSQL = "UPDATE tutors SET name = ? WHERE tutor_id = ?;";
+//
+//        try {
+//            Connection connection = DatabaseManager.getConnection();
+//
+//            PreparedStatement updateStudentStatement = connection.prepareStatement(updateStudentSQL);
+//            updateStudentStatement.setString(1,newName);
+//            updateStudentStatement.setInt(2,targetId);
+//            updateStudentStatement.executeUpdate();
+//
+//            PreparedStatement updateTutorStatement = connection.prepareStatement(updateTutorSQL);
+//            updateTutorStatement.setString(1,newName);
+//            updateTutorStatement.setInt(2,targetId);
+//            updateTutorStatement.executeUpdate();
+//
+//            System.out.println("User modification process completed");
+//
+//            connection.close();
+//
+//        } catch (SQLException e) {
+//            System.out.println("Failed to update user from database.");
+//            e.printStackTrace();
+//        }
+//    }
+//}
