@@ -232,6 +232,7 @@ public class PostgresStudentRepository implements StudentRepository {
 //    }
 //}
 
+    
 
         // =========================================================================
         // [ENTERPRISE / TRANSACTIONAL] ACID-Compliant Execution
@@ -239,7 +240,7 @@ public class PostgresStudentRepository implements StudentRepository {
         // atomic execution via commit() on success and rollback() on exception.
         // =========================================================================
 
-public void updateUserById(int targetId, String newName){
+    public void updateUserById(int targetId, String newName){
 
             String updateStudentSQL = "UPDATE students SET name = ?, WHERE student_id = ? ;" ;
             String updateTutorSQL = "UPDATE tutors SET name = ? , WHERE tutor_id = ? ;" ;
@@ -247,7 +248,7 @@ public void updateUserById(int targetId, String newName){
 
             try {
                 connection = DatabaseManager.getConnection();
-                connection.setAutoCommit(false);  //Disable auto commit
+                connection.setAutoCommit(false);  // Turn off auto-save
 
                 try {
                     PreparedStatement updateStudentStatement = connection.prepareStatement(updateStudentSQL);
@@ -261,11 +262,11 @@ public void updateUserById(int targetId, String newName){
                     updateTutorStatement.setInt(2,targetId);
                     updateTutorStatement.executeUpdate();
 
-                    connection.commit(); //All or nothing Save
+                    connection.commit(); // Save both deletes together
                     System.out.println("User has been updated successfully!");
                 } catch (SQLException e) {
                     if(connection != null){
-                        connection.rollback(); //rollback the partial changes
+                        connection.rollback(); // Undo if either fails
                         System.out.println("Failed to update user!");
                     }
                     throw e;
@@ -282,5 +283,46 @@ public void updateUserById(int targetId, String newName){
                 }
             }
 
+    }
+
+    public void deleteUserById(int targetId){
+        String deleteStudentSQL = "DELETE students WHERE student_id = ? ;";
+        String deleteTutorSQL = "DELETE tutors WHERE tutor_id = ? ;";
+        Connection connection = null;
+
+        try {
+            connection = DatabaseManager.getConnection();
+            connection.setAutoCommit(false);    // Turn off auto-save
+
+            try {
+                PreparedStatement studentDeleteStatement = connection.prepareStatement(deleteStudentSQL);
+                studentDeleteStatement.setInt(1,targetId);
+                studentDeleteStatement.executeUpdate();
+
+                PreparedStatement tutorDeleteStatement = connection.prepareStatement(deleteTutorSQL);
+                tutorDeleteStatement.setInt(1, targetId);
+                tutorDeleteStatement.executeUpdate();
+
+                connection.commit();    // Save both deletes together
+                System.out.println("User has been deleted successfully!");
+            } catch (SQLException e) {
+                if(connection != null){
+                    connection.rollback();      // Undo if either fails
+                    System.out.println("Failed to delete user!");
+                }
+                throw e;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            try {
+                connection.setAutoCommit(true);
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
