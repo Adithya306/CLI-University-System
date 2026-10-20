@@ -242,8 +242,8 @@ public class PostgresStudentRepository implements StudentRepository {
 
     public void updateUserById(int targetId, String newName){
 
-            String updateStudentSQL = "UPDATE students SET name = ?, WHERE student_id = ? ;" ;
-            String updateTutorSQL = "UPDATE tutors SET name = ? , WHERE tutor_id = ? ;" ;
+            String updateStudentSQL = "UPDATE students SET name = ? WHERE student_id = ? ;" ;
+            String updateTutorSQL = "UPDATE tutors SET name = ? WHERE tutor_id = ? ;" ;
             Connection connection = null;
 
             try {
@@ -286,8 +286,8 @@ public class PostgresStudentRepository implements StudentRepository {
     }
 
     public void deleteUserById(int targetId){
-        String deleteStudentSQL = "DELETE students WHERE student_id = ? ;";
-        String deleteTutorSQL = "DELETE tutors WHERE tutor_id = ? ;";
+        String deleteStudentSQL = "DELETE FROM students WHERE student_id = ? ;";
+        String deleteTutorSQL = "DELETE FROM tutors WHERE tutor_id = ? ;";
         Connection connection = null;
 
         try {
