@@ -39,8 +39,9 @@ public class PostgresStudentRepository implements StudentRepository {
 
         } catch (SQLException e) {
 
-            System.out.println("Failed to create table!");
-            e.printStackTrace();
+//            System.out.println("Failed to create table!");
+//            e.printStackTrace();
+            throw new DatabaseOperationException("Failed to create table!",e);
         }
     }
     @Override
@@ -67,8 +68,10 @@ public class PostgresStudentRepository implements StudentRepository {
                 connection.close();
 
             } catch (SQLException e){
-                System.out.println("Failed to save tutor!");
-                e.printStackTrace();
+
+//                System.out.println("Failed to save tutor!");
+//                e.printStackTrace();
+                throw new DatabaseOperationException("Failed to save tutor!",e);
             }
 
             } else {
@@ -93,8 +96,9 @@ public class PostgresStudentRepository implements StudentRepository {
                 connection.close();
 
             } catch (SQLException e) {
-                System.out.println("Database write failed.");
-                e.printStackTrace();
+//                System.out.println("Database write failed.");
+//                e.printStackTrace();
+                throw new DatabaseOperationException("Failed to save student!",e);
             }
         }
     }
@@ -131,8 +135,9 @@ public class PostgresStudentRepository implements StudentRepository {
             connection.close();
 
         } catch (SQLException e) {
-            System.out.println("Failed to fetch students from database.");
-            e.printStackTrace();
+//            System.out.println("Failed to fetch students from database.");
+//            e.printStackTrace();
+            throw new DatabaseOperationException("Failed to display all users!",e);
         }
 
     }
@@ -159,12 +164,13 @@ public class PostgresStudentRepository implements StudentRepository {
                         " | Role: " + resultSet.getString("role") +
                         " | Specialization: " + resultSet.getString("specialization"));
             } else {
-                System.out.println("User not found with ID: " + targetId);
+                throw new UserNotFoundException("User not found with ID: " + targetId);
             }
 
         } catch (SQLException e) {
-            System.out.println("Failed to find user from database.");
-            e.printStackTrace();
+//            System.out.println("Failed to find user from database.");
+//            e.printStackTrace();
+            throw new DatabaseOperationException("Failed to find user from Database for ID : "+targetId,e);
         }
     }
 
