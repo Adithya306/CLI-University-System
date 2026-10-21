@@ -1,4 +1,4 @@
-public class DatabaseOperationException {
+public class DatabaseOperationException extends RuntimeException {
 
     //Constructor with custom message
     public DatabaseOperationException(String message) {
