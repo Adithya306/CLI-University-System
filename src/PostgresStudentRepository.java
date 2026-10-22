@@ -316,28 +316,36 @@ public class PostgresStudentRepository implements StudentRepository {
             connection.setAutoCommit(false);    // Turn off auto-save
 
             try {
-                PreparedStatement studentDeleteStatement = connection.prepareStatement(deleteStudentSQL);
-                studentDeleteStatement.setInt(1,targetId);
-                studentDeleteStatement.executeUpdate();
 
-                PreparedStatement tutorDeleteStatement = connection.prepareStatement(deleteTutorSQL);
-                tutorDeleteStatement.setInt(1, targetId);
-                tutorDeleteStatement.executeUpdate();
+                int studentRows;
+                int tutorRows;
 
-                connection.commit();    // Save both deletes together
-                System.out.println("User has been deleted successfully!");
-            } catch (SQLException e) {
-                if(connection != null){
-                    connection.rollback();      // Undo if either fails
-                    System.out.println("Failed to delete user!");
+                try(PreparedStatement studentDeleteStatement = connection.prepareStatement(deleteStudentSQL);
+                PreparedStatement tutorDeleteStatement = connection.prepareStatement(deleteTutorSQL)) {
+
+                    studentDeleteStatement.setInt(1, targetId);
+                    studentRows = studentDeleteStatement.executeUpdate();
+
+                    tutorDeleteStatement.setInt(1, targetId);
+                    tutorRows = tutorDeleteStatement.executeUpdate();
                 }
-                throw e;
+                    if (studentRows == 0 && tutorRows == 0) {
+                        connection.rollback();
+                        throw new UserNotFoundException("User not found with ID: " + targetId);
+                    } else {
+                        connection.commit();    // Save both deletes together
+                        System.out.println("User has been deleted successfully!");
+                    }
+            } catch (SQLException e) {
+
+                connection.rollback();      // Undo if either fails
+                throw new DatabaseOperationException("Failed to delete user from Database for ID : "+targetId,e);
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        finally {
+            throw new DatabaseOperationException("Database connection error while deleting user ID: " + targetId, e);
+
+        } finally {
             try {
                 connection.setAutoCommit(true);
                 connection.close();
