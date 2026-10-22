@@ -257,28 +257,43 @@ public class PostgresStudentRepository implements StudentRepository {
                 connection.setAutoCommit(false);  // Turn off auto-save
 
                 try {
-                    PreparedStatement updateStudentStatement = connection.prepareStatement(updateStudentSQL);
-                    PreparedStatement updateTutorStatement = connection.prepareStatement(updateTutorSQL);
 
-                    updateStudentStatement.setString(1, newName);
-                    updateStudentStatement.setInt(2,targetId);
-                    updateStudentStatement.executeUpdate();
+                    int studentRows;
+                    int tutorRows;
 
-                    updateTutorStatement.setString(1,newName);
-                    updateTutorStatement.setInt(2,targetId);
-                    updateTutorStatement.executeUpdate();
+                   try (PreparedStatement updateStudentStatement = connection.prepareStatement(updateStudentSQL);
+                    PreparedStatement updateTutorStatement = connection.prepareStatement(updateTutorSQL)) {
 
-                    connection.commit(); // Save both deletes together
-                    System.out.println("User has been updated successfully!");
+                       updateStudentStatement.setString(1, newName);
+                       updateStudentStatement.setInt(2, targetId);
+                       studentRows = updateStudentStatement.executeUpdate();
+
+                       updateTutorStatement.setString(1, newName);
+                       updateTutorStatement.setInt(2, targetId);
+                       tutorRows = updateTutorStatement.executeUpdate();
+                   }
+                    // If 0 rows were modified across both tables, the user ID does not exist
+                        if (studentRows == 0 && tutorRows == 0) {
+                            connection.rollback();
+                            throw new UserNotFoundException("User not found with ID: " + targetId);
+                        } else {
+                            connection.commit(); // save changes
+                            System.out.println("user has been updated successfully!");
+                        }
+
+//                        connection.commit(); // Save both deletes together
+//                        System.out.println("User has been updated successfully!");
+
+
                 } catch (SQLException e) {
-                    if(connection != null){
-                        connection.rollback(); // Undo if either fails
-                        System.out.println("Failed to update user!");
-                    }
-                    throw e;
+
+                    connection.rollback(); // Undo if either fails
+                    System.out.println("Failed to update user!");
+                    throw new DatabaseOperationException("Failed to update user!",e);
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+
+                throw new DatabaseOperationException("Database connection error while updating user ID: " + targetId, e);
 
             } finally {
                 try {
