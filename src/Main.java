@@ -138,9 +138,16 @@ public class Main {
 
                         repository.deleteUserById(deleteId);
 
-                    } catch (Exception e) {
-                        System.out.println("Error: Invalid input.");
-                        scanner.nextLine();
+                    } catch (UserNotFoundException e) {
+                        // Prints: "Error: User with ID 999 was not found to update"
+                        System.out.println("Error: " + e.getMessage());
+                    } catch (DatabaseOperationException e) {
+                        // Prints database query failures
+                        System.out.println("Database Error: " + e.getMessage());
+                    }catch (Exception e) {
+                        // Catches typing mistakes (e.g., entering letters instead of numbers for ID)
+                        System.out.println("Error: Invalid input. Please enter a valid numeric ID.");
+                        scanner.nextLine(); // Clear the scanner buffer
                     }
 
                 }
@@ -155,9 +162,17 @@ public class Main {
                         String newName = scanner.nextLine();
 
                         repository.updateUserById(updateId, newName);
+                    } catch (UserNotFoundException e) {
+                        // Prints: "Error: User with ID 999 was not found to update"
+                        System.out.println("Error: " + e.getMessage());
+                    } catch (DatabaseOperationException e) {
+                        // Prints database query failures
+                        System.out.println("Database Error: " + e.getMessage());
                     } catch (Exception e) {
-                        System.out.println("Error: Invalid input");
-                    }
+                        // Catches typing mistakes (e.g., entering letters instead of numbers for ID)
+                        System.out.println("Error: Invalid input. Please enter a valid numeric ID.");
+                        scanner.nextLine(); // Clear the scanner buffer
+                        }
                 }
                 default -> {
                     System.out.println("Invalid choice");
