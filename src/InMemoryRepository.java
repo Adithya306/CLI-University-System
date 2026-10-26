@@ -1,8 +1,9 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class InMemoryRepository implements StudentRepository{
+public class InMemoryRepository implements StudentRepository {
 
     //***Array list implementation of InMemoryRepository***
 
@@ -43,77 +44,127 @@ public class InMemoryRepository implements StudentRepository{
     //***Hash Map implementation of InMemoryRepository***
 
     // Key: Student ID (Integer) | Value: Student Object
-    private final Map<Integer,Student> studentsMap = new HashMap<>();
+//    private final Map<Integer, Student> studentsMap = new HashMap<>();
+//
+//    @Override
+//    public void save(Student student) {
+//
+//        // map.put(key, value) stores or updates the entry in O(1) time
+//        studentsMap.put(student.getStudentID(), student);
+//        System.out.println("Student saved in RAM (HashMap).");
+//
+//    }
+//
+//    @Override
+//    public void displayAll() {
+//        System.out.println("\n--- Registered Users (In-Memory Map) ---");
+//        if (studentsMap.isEmpty()) {
+//            System.out.println("No users found in memory.");
+//            return;
+//        }
+//
+//        // studentMap.values() returns a Collection view of all Student objects
+//        for (Student student : studentsMap.values()) {
+//            System.out.println(student);
+//        }
+//    }
+//
+//    public void findUserById(int targetId) {
+//        // O(1) Direct Lookup
+//        Student foundStudent = studentsMap.get(targetId);
+//
+//        if (foundStudent != null) {
+//            System.out.println("\n--- User Found ---");
+//            System.out.println(foundStudent);
+//        } else {
+//            // Throwing our custom domain exception when an ID is missing
+//            throw new UserNotFoundException("User with ID " + targetId + " was not found in memory.");
+//        }
+//    }
+//
+//    public void deleteUserById(int targetId) {
+//        // map.remove(key) returns the removed Value, or null if the key did not exist
+//        Student removedStudent = studentsMap.remove(targetId);
+//
+//        if (removedStudent == null) {
+//            throw new UserNotFoundException("User with ID " + targetId + " was not found to delete.");
+//        }
+//
+//        System.out.println("User " + targetId + " removed from memory.");
+//    }
+//
+//    public void updateUserById(int targetId, String newName) {
+//
+//        Student existingStudent = studentsMap.get(targetId);
+//
+//        if (existingStudent != null) {
+//
+//            existingStudent.setName(newName);
+//
+////            If your domain objects are designed to be strictly immutable (no setters in student.java class),
+////            you would instantiate a new Student object and overwrite the key entry using below steps
+//
+//            // 1. Create a NEW Student object with the updated name (retaining the same ID)
+////            Student updatedStudent = new Student(targetId, newName);
+////
+//            // 2. Overwrite the old reference in the Map with the new Student object
+////              studentsMap.put(targetId, updatedStudent);
+////
+//            System.out.println("User " + targetId + " updated to " + newName);
+//
+//        } else {
+//            throw new UserNotFoundException("User with ID " + targetId + " was not found in memory.");
+//        }
+//    }
+
+
+    //      *** Generic Repository Implementation (HashMap) ***
+
+    private final Map<Integer, Student> studentsMap = new HashMap<>();
 
     @Override
-    public void  save(Student student) {
-
-        // map.put(key, value) stores or updates the entry in O(1) time
+    public void save(Student student) {
         studentsMap.put(student.getStudentID(), student);
         System.out.println("Student saved in RAM (HashMap).");
-
     }
 
     @Override
-    public void displayAll() {
-        System.out.println("\n--- Registered Users (In-Memory Map) ---");
-        if (studentsMap.isEmpty()) {
-            System.out.println("No users found in memory.");
-            return;
-        }
-
-        // studentMap.values() returns a Collection view of all Student objects
-        for (Student student : studentsMap.values()) {
-            System.out.println(student);
-        }
+    public List<Student> findAll() {
+        // Converts the HashMap's values into an ArrayList of Student objects
+        return new ArrayList<>(studentsMap.values());
     }
 
-    public void findUserById(int targetId) {
-        // O(1) Direct Lookup
-        Student foundStudent = studentsMap.get(targetId);
+    @Override
+    public Student findById(Integer id) {
+        Student student = studentsMap.get(id);
 
-        if (foundStudent != null) {
-            System.out.println("\n--- User Found ---");
-            System.out.println(foundStudent);
-        } else {
-            // Throwing our custom domain exception when an ID is missing
-            throw new UserNotFoundException("User with ID " + targetId + " was not found in memory.");
+        if (student == null) {
+            throw new UserNotFoundException("User with ID " + id + " was not found in memory.");
         }
+
+        return student;
     }
 
-    public void deleteUserById(int targetId) {
-        // map.remove(key) returns the removed Value, or null if the key did not exist
-        Student removedStudent = studentsMap.remove(targetId);
+    @Override
+    public void updateById(Integer id, String newName) {
+        Student student = studentsMap.get(id);
+
+        if (student == null) {
+            throw new UserNotFoundException("User with ID " + id + " was not found in memory.");
+        }
+
+        student.setName(newName);
+        System.out.println("User " + id + " updated to " + newName);
+    }
+
+    @Override
+    public void deleteById(Integer id) {
+        Student removedStudent = studentsMap.remove(id);
 
         if (removedStudent == null) {
-            throw new UserNotFoundException("User with ID " + targetId + " was not found to delete.");
+            throw new UserNotFoundException("User with ID " + id + " was not found in memory.");
         }
 
-        System.out.println("User " + targetId + " removed from memory.");
-    }
-
-    public void updateUserById(int targetId, String newName) {
-
-        Student existingStudent = studentsMap.get(targetId);
-
-        if (existingStudent != null) {
-
-            existingStudent.setName(newName);
-
-//            If your domain objects are designed to be strictly immutable (no setters in student.java class),
-//            you would instantiate a new Student object and overwrite the key entry using below steps
-
-            // 1. Create a NEW Student object with the updated name (retaining the same ID)
-//            Student updatedStudent = new Student(targetId, newName);
-//
-            // 2. Overwrite the old reference in the Map with the new Student object
-//              studentsMap.put(targetId, updatedStudent);
-//
-            System.out.println("User " + targetId + " updated to " + newName);
-
-        } else {
-            throw new UserNotFoundException("User with ID " + targetId + " was not found in memory.");
-        }
+        System.out.println("User " + id + " removed from memory.");
     }
 }
-
