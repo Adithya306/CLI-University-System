@@ -1,4 +1,6 @@
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PostgresStudentRepository implements StudentRepository {
 
@@ -394,6 +396,37 @@ public class PostgresStudentRepository implements StudentRepository {
                 }
             }
         }
+
+
+    @Override
+    public List<Student> findAll() {
+        List<Student> users = new ArrayList<>();
+        String selectSQL = "SELECT student_id AS id, name, 'Student' AS role, 'None' AS specialization FROM students " +
+                "UNION " +
+                "SELECT tutor_id AS id, name, 'Tutor' AS role, specialization FROM tutors;";
+
+        try (Connection connection = DatabaseManager.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(selectSQL)) {
+
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                String role = resultSet.getString("role");
+                String specialization = resultSet.getString("specialization");
+
+                if ("Tutor".equalsIgnoreCase(role)) {
+                    users.add(new Tutor(id, name, specialization));
+                } else {
+                    users.add(new Student(id, name));
+                }
+            }
+            return users;
+
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Failed to fetch all users from database!", e);
+        }
+    }
 
 
 }
