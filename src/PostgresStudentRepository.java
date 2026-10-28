@@ -461,4 +461,51 @@ public class PostgresStudentRepository implements StudentRepository {
     }
 
 
+    @Override
+    public void updateById(Integer id, String newName) {
+        String updateStudentSQL = "UPDATE students SET name = ? WHERE student_id = ?;";
+        String updateTutorSQL = "UPDATE tutors SET name = ? WHERE tutor_id = ?;";
+        Connection connection = null;
+
+        try {
+            connection = DatabaseManager.getConnection();
+            connection.setAutoCommit(false); // Turn off auto-commit for transaction safety
+
+            try (PreparedStatement updateStudentStatement = connection.prepareStatement(updateStudentSQL);
+                 PreparedStatement updateTutorStatement = connection.prepareStatement(updateTutorSQL)) {
+
+                updateStudentStatement.setString(1, newName);
+                updateStudentStatement.setInt(2, id);
+                int studentRows = updateStudentStatement.executeUpdate();
+
+                updateTutorStatement.setString(1, newName);
+                updateTutorStatement.setInt(2, id);
+                int tutorRows = updateTutorStatement.executeUpdate();
+
+                if (studentRows == 0 && tutorRows == 0) {
+                    connection.rollback();
+                    throw new UserNotFoundException("User not found with ID: " + id);
+                } else {
+                    connection.commit();
+                    System.out.println("User has been updated successfully!");
+                }
+            } catch (SQLException e) {
+                connection.rollback();
+                throw new DatabaseOperationException("Failed to update user!", e);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Database connection error while updating user ID: " + id, e);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true);
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
 }
