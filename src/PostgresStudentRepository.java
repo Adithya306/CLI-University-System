@@ -428,5 +428,37 @@ public class PostgresStudentRepository implements StudentRepository {
         }
     }
 
+    @Override
+    public Student findById(Integer id) {
+        String searchSQL = "SELECT student_id AS id, name, 'Student' AS role, 'None' AS specialization FROM students WHERE student_id = ? " +
+                "UNION " +
+                "SELECT tutor_id AS id, name, 'Tutor' AS role, specialization FROM tutors WHERE tutor_id = ?;";
+
+        try (Connection connection = DatabaseManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(searchSQL)) {
+
+            preparedStatement.setInt(1, id);
+            preparedStatement.setInt(2, id);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    String name = resultSet.getString("name");
+                    String role = resultSet.getString("role");
+                    String specialization = resultSet.getString("specialization");
+
+                    if ("Tutor".equalsIgnoreCase(role)) {
+                        return new Tutor(id, name, specialization);
+                    } else {
+                        return new Student(id, name);
+                    }
+                } else {
+                    throw new UserNotFoundException("User not found with ID: " + id);
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Failed to find user from Database for ID: " + id, e);
+        }
+    }
+
 
 }
