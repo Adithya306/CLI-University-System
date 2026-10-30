@@ -133,15 +133,36 @@ public class Main {
                 }
 
                 case 5 -> {
+
+                    //commented below legacy method call to add new generic method call
+//                    try {
+//                        System.out.println("Enter User ID to Search");
+//                        int searchId = scanner.nextInt();
+//                        scanner.nextLine();
+//
+//                        repository.findUserById(searchId);
+//
+//                    } catch (Exception e) {
+//                        System.out.println("Error: Invalid input.");
+//                        scanner.nextLine();
+//                    }
+
+                    //Generic method call
                     try {
                         System.out.println("Enter User ID to Search");
                         int searchId = scanner.nextInt();
                         scanner.nextLine();
 
-                        repository.findUserById(searchId);
+                        Student foundUser = repository.findById(searchId);
+                        System.out.println("\n--- User Found ---");
+                        System.out.println(foundUser);
 
+                    } catch (UserNotFoundException e) {
+                        System.out.println("Error: " + e.getMessage());
+                    } catch (DatabaseOperationException e) {
+                        System.out.println("Database Error: " + e.getMessage());
                     } catch (Exception e) {
-                        System.out.println("Error: Invalid input.");
+                        System.out.println("Error: Invalid input. Please enter a valid numeric ID.");
                         scanner.nextLine();
                     }
                 }
