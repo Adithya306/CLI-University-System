@@ -86,7 +86,24 @@ public class Main {
 //                        System.out.println(student);
 //                    }
 
-                    repository.displayAll();
+                    //commented below legacy method call to add new generic method call
+//                    repository.displayAll();
+
+                    //Generic method call
+                    try {
+                        List<Student> users = repository.findAll();
+                        System.out.println("\n--- Registered Users ---");
+                        if (users.isEmpty()) {
+                            System.out.println("No users found.");
+                        } else {
+                            for (Student user : users) {
+                                System.out.println(user);
+                            }
+                        }
+                    } catch (DatabaseOperationException e) {
+                        System.out.println("Database Error: " + e.getMessage());
+                    }
+
                 }
                 case 3 -> {
                     System.out.println("Exiting the program");
