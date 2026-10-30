@@ -507,5 +507,50 @@ public class PostgresStudentRepository implements StudentRepository {
         }
     }
 
+    @Override
+    public void deleteById(Integer id) {
+        String deleteStudentSQL = "DELETE FROM students WHERE student_id = ?;";
+        String deleteTutorSQL = "DELETE FROM tutors WHERE tutor_id = ?;";
+        Connection connection = null;
+
+        try {
+            connection = DatabaseManager.getConnection();
+            connection.setAutoCommit(false); // Turn off auto-commit for transaction safety
+
+            try (PreparedStatement studentDeleteStatement = connection.prepareStatement(deleteStudentSQL);
+                 PreparedStatement tutorDeleteStatement = connection.prepareStatement(deleteTutorSQL)) {
+
+                studentDeleteStatement.setInt(1, id);
+                int studentRows = studentDeleteStatement.executeUpdate();
+
+                tutorDeleteStatement.setInt(1, id);
+                int tutorRows = tutorDeleteStatement.executeUpdate();
+
+                if (studentRows == 0 && tutorRows == 0) {
+                    connection.rollback();
+                    throw new UserNotFoundException("User not found with ID: " + id);
+                } else {
+                    connection.commit();
+                    System.out.println("User has been deleted successfully!");
+                }
+            } catch (SQLException e) {
+                connection.rollback();
+                throw new DatabaseOperationException("Failed to delete user from Database for ID: " + id, e);
+            }
+
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Database connection error while deleting user ID: " + id, e);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true);
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 
 }
