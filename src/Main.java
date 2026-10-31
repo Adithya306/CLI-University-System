@@ -169,23 +169,40 @@ public class Main {
 
                 case 6 -> {
 
+//                    try {
+//                        System.out.println(" Enter User ID to delete user");
+//                        int deleteId = scanner.nextInt();
+//                        scanner.nextLine();
+//
+//                        repository.deleteUserById(deleteId);
+//
+//                    } catch (UserNotFoundException e) {
+//                        // Prints: "Error: User with ID 999 was not found to update"
+//                        System.out.println("Error: " + e.getMessage());
+//                    } catch (DatabaseOperationException e) {
+//                        // Prints database query failures
+//                        System.out.println("Database Error: " + e.getMessage());
+//                    }catch (Exception e) {
+//                        // Catches typing mistakes (e.g., entering letters instead of numbers for ID)
+//                        System.out.println("Error: Invalid input. Please enter a valid numeric ID.");
+//                        scanner.nextLine(); // Clear the scanner buffer
+//                    }
+
+                    //Generic method call
                     try {
-                        System.out.println(" Enter User ID to delete user");
+                        System.out.println("Enter User ID to delete user");
                         int deleteId = scanner.nextInt();
                         scanner.nextLine();
 
-                        repository.deleteUserById(deleteId);
+                        repository.deleteById(deleteId);
 
                     } catch (UserNotFoundException e) {
-                        // Prints: "Error: User with ID 999 was not found to update"
                         System.out.println("Error: " + e.getMessage());
                     } catch (DatabaseOperationException e) {
-                        // Prints database query failures
                         System.out.println("Database Error: " + e.getMessage());
-                    }catch (Exception e) {
-                        // Catches typing mistakes (e.g., entering letters instead of numbers for ID)
+                    } catch (Exception e) {
                         System.out.println("Error: Invalid input. Please enter a valid numeric ID.");
-                        scanner.nextLine(); // Clear the scanner buffer
+                        scanner.nextLine();
                     }
 
                 }
