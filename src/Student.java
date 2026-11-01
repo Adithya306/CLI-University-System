@@ -6,8 +6,13 @@ public class Student {
     private int studentID;
 
     public Student(String name){
-        this.name=name;
-        this.studentID=studentID;
+//        this.name=name;
+
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Student name cannot be null or empty.");
+        }
+        this.name = name.trim();
+
     }
 
     public Student(int studentID, String name){
