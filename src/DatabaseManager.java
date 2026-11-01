@@ -45,4 +45,10 @@ public class DatabaseManager {
             System.out.println("Connection closed successfully.");
         }
     }
+
+    public static void closePool() {
+        if (dataSource != null && !dataSource.isClosed()) {
+            dataSource.close();
+        }
+    }
 }

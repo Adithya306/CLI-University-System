@@ -107,6 +107,7 @@ public class Main {
                 }
                 case 3 -> {
                     System.out.println("Exiting the program");
+                    DatabaseManager.closePool();
                     return;
                 }
 
