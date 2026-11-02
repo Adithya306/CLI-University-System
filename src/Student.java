@@ -1,6 +1,6 @@
 import java.util.Objects;
 
-public class Student {
+public class Student implements Comparable<Student> {
 
     private String name;
     private int studentID;
@@ -60,5 +60,10 @@ public class Student {
     public int hashCode() {
         // Generates an integer hash code based exclusively on the studentID
         return Objects.hash(studentID);
+    }
+
+    @Override
+    public int compareTo(Student other) {
+        return Integer.compare(this.studentID, other.studentID);
     }
 }
