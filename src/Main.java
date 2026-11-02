@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
@@ -92,6 +93,8 @@ public class Main {
                     //Generic method call
                     try {
                         List<Student> users = repository.findAll();
+                        Collections.sort(users);
+
                         System.out.println("\n--- Registered Users ---");
                         if (users.isEmpty()) {
                             System.out.println("No users found.");
