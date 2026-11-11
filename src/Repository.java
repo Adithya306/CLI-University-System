@@ -7,4 +7,7 @@ public interface Repository<T,ID> {
     T findById(ID id);
     void updateById(ID id, String newName);
     void deleteById(ID id);
+
+    boolean existsById(ID id);
+    long count();
 }

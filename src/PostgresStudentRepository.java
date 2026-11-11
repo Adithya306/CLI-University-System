@@ -2,7 +2,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PostgresStudentRepository implements StudentRepository {
+public class PostgresStudentRepository extends AbstractJdbcRepository<Student,Integer> implements StudentRepository {
 
     public PostgresStudentRepository () {
 

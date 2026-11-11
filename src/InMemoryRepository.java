@@ -167,4 +167,15 @@ public class InMemoryRepository implements StudentRepository {
 
         System.out.println("User " + id + " removed from memory.");
     }
+
+    @Override
+    public boolean existsById(Integer id) {
+        if (id == null) return false;
+        return studentsMap.containsKey(id); // Instant O(1) key lookup
+    }
+
+    @Override
+    public long count() {
+        return studentsMap.size();  // Returns total number of key-value pairs
+    }
 }
