@@ -34,6 +34,8 @@ public class Main {
             System.out.println("5. Search user by ID");
             System.out.println("6. Delete user by ID");
             System.out.println("7. Update user by ID");
+            System.out.println("8. Check user exist by ID");
+            System.out.println("9. View total user count");
             int choice = scanner.nextInt();
             scanner.nextLine();
 
@@ -267,6 +269,15 @@ public class Main {
                     } catch (InputMismatchException e) {
                         System.out.println("Error: Invalid input. Please enter a valid numeric ID.");
                         scanner.nextLine(); // Clear invalid token from Scanner buffer
+                    } catch (DatabaseOperationException e) {
+                        System.out.println("Database Error: " + e.getMessage());
+                    }
+                }
+
+                case 9 ->{
+                    try {
+                        long userCount = repository.count();
+                        System.out.println("Total registered users: " + userCount);
                     } catch (DatabaseOperationException e) {
                         System.out.println("Database Error: " + e.getMessage());
                     }
