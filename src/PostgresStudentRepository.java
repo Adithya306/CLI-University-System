@@ -552,5 +552,32 @@ public class PostgresStudentRepository extends AbstractJdbcRepository<Student,In
         }
     }
 
+    @Override
+    public boolean existsById(Integer id) {
+            if (id == null) {
+                return false;
+            }
+
+            String existsSUserSql = "SELECT COUNT(*) FROM (" +
+                                    "SELECT student_id AS id FROM students " +
+                                    "UNION ALL "+
+                                    "SELECT tutor_id AS id FROM tutors" +
+                                    ") AS all_users WHERE id =?";
+
+            try(Connection connection = getConnection();
+                PreparedStatement statement = connection.prepareStatement(existsSUserSql)) {
+
+                statement.setInt(1,id);
+
+                try(ResultSet resultSet = statement.executeQuery()){
+                    if (resultSet.next()){
+                        return resultSet.getInt(1)>0;
+                    }
+                }
+            } catch (SQLException e) {
+                throw new DatabaseOperationException("Failed to check if user exists in database", e);
+            }
+            return false;
+    }
 
 }

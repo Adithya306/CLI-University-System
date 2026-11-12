@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     public static void main(String[]args){
@@ -250,6 +247,28 @@ public class Main {
                     } catch (Exception e) {
                         System.out.println("Error: Invalid input. Please enter a valid numeric ID.");
                         scanner.nextLine();
+                    }
+                }
+
+                case 8 ->{
+                    try {
+                        System.out.println("Enter User ID to check if user exists");
+
+                        int checkId = scanner.nextInt();
+                        scanner.nextLine();
+
+                        //as this method return boolean value we need to store that into a variable and display clearly
+                        boolean exists = repository.existsById(checkId);
+                        if (exists) {
+                            System.out.println("User with ID " + checkId + " exists in the system.");
+                        } else {
+                            System.out.println("No user found with ID " + checkId + ".");
+                        }
+                    } catch (InputMismatchException e) {
+                        System.out.println("Error: Invalid input. Please enter a valid numeric ID.");
+                        scanner.nextLine(); // Clear invalid token from Scanner buffer
+                    } catch (DatabaseOperationException e) {
+                        System.out.println("Database Error: " + e.getMessage());
                     }
                 }
                 default -> {
