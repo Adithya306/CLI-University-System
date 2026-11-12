@@ -558,14 +558,14 @@ public class PostgresStudentRepository extends AbstractJdbcRepository<Student,In
                 return false;
             }
 
-            String existsSUserSql = "SELECT COUNT(*) FROM (" +
+            String existsUserSql = "SELECT COUNT(*) FROM (" +
                                     "SELECT student_id AS id FROM students " +
                                     "UNION ALL "+
                                     "SELECT tutor_id AS id FROM tutors" +
                                     ") AS all_users WHERE id =?";
 
             try(Connection connection = getConnection();
-                PreparedStatement statement = connection.prepareStatement(existsSUserSql)) {
+                PreparedStatement statement = connection.prepareStatement(existsUserSql)) {
 
                 statement.setInt(1,id);
 
@@ -578,6 +578,24 @@ public class PostgresStudentRepository extends AbstractJdbcRepository<Student,In
                 throw new DatabaseOperationException("Failed to check if user exists in database", e);
             }
             return false;
+    }
+
+    @Override
+    public long count() {
+
+            String countSql = "SELECT (SELECT COUNT(*) FROM students) + (SELECT COUNT(*)FROM tutors) AS total_count";
+
+            try(Connection connection = getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(countSql)){
+
+                if (resultSet.next()){
+                    return resultSet.getLong("total_count");
+                }
+            } catch (SQLException e) {
+                throw new DatabaseOperationException("Failed to count users in database", e);
+            }
+            return 0;
     }
 
 }
