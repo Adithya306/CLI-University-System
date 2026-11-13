@@ -1,10 +1,14 @@
+import com.zaxxer.hikari.HikariDataSource;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PostgresStudentRepository extends AbstractJdbcRepository<Student,Integer> implements StudentRepository {
 
-    public PostgresStudentRepository () {
+    public PostgresStudentRepository (HikariDataSource dataSource) {
+
+        super(dataSource);
 
         String createSequenceSQL = "CREATE SEQUENCE IF NOT EXISTS global_user_seq START 100;";
         String createStudentTableSQL = "CREATE TABLE IF NOT EXISTS students (" +

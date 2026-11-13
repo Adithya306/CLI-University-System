@@ -35,6 +35,13 @@ public class DatabaseManager {
             e.printStackTrace();
         }
     }
+
+    // Exposes the initialized HikariCP connection pool (not a single connection)
+    // so Main.java can pass it into repository constructors (Dependency Injection).
+    public static HikariDataSource getDataSource() {
+        return dataSource;
+    }
+
     public static Connection getConnection() throws SQLException {
         return dataSource.getConnection();
     }

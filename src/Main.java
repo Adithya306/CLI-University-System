@@ -14,7 +14,10 @@ public class Main {
 //        moved this array list to the inmemoryRepository class and call the intialize the inmemory repository in main class
 //        List<Student> students = new ArrayList<>();
 
-        StudentRepository repository = new PostgresStudentRepository();
+        // 1. DatabaseManager.getDataSource() -> Fetches the active HikariCP connection pool.
+        // 2. new PostgresStudentRepository(...) -> Passes the pool up to AbstractJdbcRepository via super(dataSource).
+        // 3. StudentRepository repository = ... -> Programs to the interface so Main stays blind to JDBC/SQL details.
+        StudentRepository repository = new PostgresStudentRepository(DatabaseManager.getDataSource());
 
 //        students.add(firstStudent);
 //        students.add(secondStudent);
