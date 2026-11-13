@@ -22,13 +22,17 @@ public class PostgresStudentRepository extends AbstractJdbcRepository<Student,In
                 "specialization VARCHAR(100)" +
                 ");";
 
-        try {
+        // Borrow a connection from the pool using the inherited getConnection() helper.
+        // Try-with-resources automatically closes the statement and returns the connection
+        // safely back to the HikariCP pool when finished, even if an error occurs.
+        try (Connection connection = getConnection();
+             Statement statement = connection.createStatement()){
 
             // Get the live connection from the manager we built earlier
-            Connection connection = DatabaseManager.getConnection();
+//            Connection connection = DatabaseManager.getConnection();
 
             // Create a statement object to carry our SQL string to the database
-            Statement statement = connection.createStatement();
+//            Statement statement = connection.createStatement();
 
 //            TEMPORARY LINE: Delete the broken table
 //            statement.execute("DROP TABLE tutors;");
@@ -41,7 +45,7 @@ public class PostgresStudentRepository extends AbstractJdbcRepository<Student,In
             statement.execute(createTutorTableSQL);
 
             System.out.println("Database tables and sequence are ready");
-            connection.close();
+//            connection.close();
 
         } catch (SQLException e) {
 
@@ -370,11 +374,16 @@ public class PostgresStudentRepository extends AbstractJdbcRepository<Student,In
 
         @Override
         public void save(Student student) {
+
+            if (student == null) {
+                throw new IllegalArgumentException("Cannot save a null user.");
+            }
+
             if (student instanceof Tutor) {
                 Tutor tutor = (Tutor) student;
                 String insertSQL = "INSERT INTO tutors (name, specialization) VALUES (?, ?);";
 
-                try (Connection connection = DatabaseManager.getConnection();
+                try (Connection connection = getConnection();
                      PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
 
                     preparedStatement.setString(1, tutor.getName());
@@ -388,7 +397,7 @@ public class PostgresStudentRepository extends AbstractJdbcRepository<Student,In
             } else {
                 String insertSQL = "INSERT INTO students (name) VALUES (?);";
 
-                try (Connection connection = DatabaseManager.getConnection();
+                try (Connection connection = getConnection();
                      PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
 
                     preparedStatement.setString(1, student.getName());
@@ -404,12 +413,13 @@ public class PostgresStudentRepository extends AbstractJdbcRepository<Student,In
 
     @Override
     public List<Student> findAll() {
+
         List<Student> users = new ArrayList<>();
         String selectSQL = "SELECT student_id AS id, name, 'Student' AS role, 'None' AS specialization FROM students " +
                 "UNION " +
                 "SELECT tutor_id AS id, name, 'Tutor' AS role, specialization FROM tutors;";
 
-        try (Connection connection = DatabaseManager.getConnection();
+        try (Connection connection = getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(selectSQL)) {
 
@@ -434,11 +444,16 @@ public class PostgresStudentRepository extends AbstractJdbcRepository<Student,In
 
     @Override
     public Student findById(Integer id) {
+
+        if (id == null) {
+            throw new UserNotFoundException("User ID cannot be null.");
+        }
+
         String searchSQL = "SELECT student_id AS id, name, 'Student' AS role, 'None' AS specialization FROM students WHERE student_id = ? " +
                 "UNION " +
                 "SELECT tutor_id AS id, name, 'Tutor' AS role, specialization FROM tutors WHERE tutor_id = ?;";
 
-        try (Connection connection = DatabaseManager.getConnection();
+        try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(searchSQL)) {
 
             preparedStatement.setInt(1, id);
@@ -467,12 +482,17 @@ public class PostgresStudentRepository extends AbstractJdbcRepository<Student,In
 
     @Override
     public void updateById(Integer id, String newName) {
+
+        if (id == null) {
+            throw new UserNotFoundException("User ID cannot be null.");
+        }
+
         String updateStudentSQL = "UPDATE students SET name = ? WHERE student_id = ?;";
         String updateTutorSQL = "UPDATE tutors SET name = ? WHERE tutor_id = ?;";
         Connection connection = null;
 
         try {
-            connection = DatabaseManager.getConnection();
+            connection = getConnection();
             connection.setAutoCommit(false); // Turn off auto-commit for transaction safety
 
             try (PreparedStatement updateStudentStatement = connection.prepareStatement(updateStudentSQL);
@@ -513,12 +533,17 @@ public class PostgresStudentRepository extends AbstractJdbcRepository<Student,In
 
     @Override
     public void deleteById(Integer id) {
+
+        if (id == null) {
+            throw new UserNotFoundException("User ID cannot be null.");
+        }
+
         String deleteStudentSQL = "DELETE FROM students WHERE student_id = ?;";
         String deleteTutorSQL = "DELETE FROM tutors WHERE tutor_id = ?;";
         Connection connection = null;
 
         try {
-            connection = DatabaseManager.getConnection();
+            connection = getConnection();
             connection.setAutoCommit(false); // Turn off auto-commit for transaction safety
 
             try (PreparedStatement studentDeleteStatement = connection.prepareStatement(deleteStudentSQL);
