@@ -92,19 +92,33 @@ public class Main {
                     //commented below legacy method call to add new generic method call
 //                    repository.displayAll();
 
+
+
                     //Generic method call
+//                    try {
+//                        List<Student> users = repository.findAll();
+//                        Collections.sort(users);
+//
+//                        System.out.println("\n--- Registered Users ---");
+//                        if (users.isEmpty()) {
+//                            System.out.println("No users found.");
+//                        } else {
+//                            for (Student user : users) {
+//                                System.out.println(user);
+//                            }
+//                        }
+//                    } catch (DatabaseOperationException e) {
+//                        System.out.println("Database Error: " + e.getMessage());
+//                    }
+
+
+                    // add student formatter method to generic method call
                     try {
                         List<Student> users = repository.findAll();
                         Collections.sort(users);
 
                         System.out.println("\n--- Registered Users ---");
-                        if (users.isEmpty()) {
-                            System.out.println("No users found.");
-                        } else {
-                            for (Student user : users) {
-                                System.out.println(user);
-                            }
-                        }
+                        System.out.print(StudentFormatter.formatTable(users));
                     } catch (DatabaseOperationException e) {
                         System.out.println("Database Error: " + e.getMessage());
                     }
