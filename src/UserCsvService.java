@@ -8,4 +8,16 @@ public class UserCsvService {
         }
         this.repository = repository;
     }
+
+    private String escapeCsv(String value) {
+        if (value == null) {
+            return "";
+        }
+        boolean hasSpecialChars = value.contains(",") || value.contains("\"")
+                || value.contains("\n") || value.contains("\r");
+        if (hasSpecialChars) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
+    }
 }
