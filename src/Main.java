@@ -1,3 +1,4 @@
+import java.nio.file.Path;
 import java.util.*;
 
 public class Main {
@@ -18,6 +19,7 @@ public class Main {
         // 2. new PostgresStudentRepository(...) -> Passes the pool up to AbstractJdbcRepository via super(dataSource).
         // 3. StudentRepository repository = ... -> Programs to the interface so Main stays blind to JDBC/SQL details.
         StudentRepository repository = new PostgresStudentRepository(DatabaseManager.getDataSource());
+        UserCsvService csvService = new UserCsvService(repository);
 
 //        students.add(firstStudent);
 //        students.add(secondStudent);
@@ -39,6 +41,7 @@ public class Main {
             System.out.println("7. Update user by ID");
             System.out.println("8. Check user exist by ID");
             System.out.println("9. View total user count");
+            System.out.println("10. Export file");
             int choice = scanner.nextInt();
             scanner.nextLine();
 
@@ -297,6 +300,21 @@ public class Main {
                         System.out.println("Total registered users: " + userCount);
                     } catch (DatabaseOperationException e) {
                         System.out.println("Database Error: " + e.getMessage());
+                    }
+                }
+
+                case 10 ->{
+                    System.out.print("Enter export file path (press Enter for exports/users.csv): ");
+                    String inputPath = scanner.nextLine().trim();
+                    if (inputPath.isEmpty()) {
+                        inputPath = "exports/users.csv";
+                    }
+
+                    try {
+                        int exportedCount = csvService.exportToCsv(Path.of(inputPath));
+                        System.out.println("Successfully exported " + exportedCount + " user(s) to " + inputPath);
+                    } catch (FileStorageException | DatabaseOperationException e) {
+                        System.out.println("Export Error: " + e.getMessage());
                     }
                 }
                 default -> {
