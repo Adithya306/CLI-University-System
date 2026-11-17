@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserCsvService {
@@ -74,5 +75,25 @@ public class UserCsvService {
         } catch (IOException e) {
             throw new FileStorageException("Failed to export users to CSV: " + filePath, e);
         }
+    }
+
+
+    private List<String> parseCsvLine(String line, int lineNumber) {
+        List<String> fields = new ArrayList<>();
+        StringBuilder currentField = new StringBuilder();
+
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+
+            if (c == ',') {
+                fields.add(currentField.toString());
+                currentField.setLength(0);
+            } else {
+                currentField.append(c);
+            }
+        }
+
+        fields.add(currentField.toString());
+        return fields;
     }
 }

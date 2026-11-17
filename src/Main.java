@@ -41,7 +41,7 @@ public class Main {
             System.out.println("7. Update user by ID");
             System.out.println("8. Check user exist by ID");
             System.out.println("9. View total user count");
-            System.out.println("10. Export file");
+            System.out.println("10. Export users CSV file");
             int choice = scanner.nextInt();
             scanner.nextLine();
 
