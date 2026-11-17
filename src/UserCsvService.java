@@ -81,16 +81,38 @@ public class UserCsvService {
     private List<String> parseCsvLine(String line, int lineNumber) {
         List<String> fields = new ArrayList<>();
         StringBuilder currentField = new StringBuilder();
+        boolean inQuotes = false;
 
         for (int i = 0; i < line.length(); i++) {
             char c = line.charAt(i);
 
-            if (c == ',') {
-                fields.add(currentField.toString());
-                currentField.setLength(0);
-            } else {
-                currentField.append(c);
-            }
+            if (inQuotes) {
+                if (c == '"') {
+                    // Two consecutive quotes ("") inside a quoted field represent a literal quote
+                    if (i + 1 < line.length() && line.charAt(i + 1) == '"') {
+                        currentField.append('"');
+                        i++;
+                    } else {
+                        inQuotes = false;
+                    }
+                } else {
+                    currentField.append(c);
+                }
+
+                } else {
+                    if (c == '"') {
+                        inQuotes = true;
+                    } else if (c == ',') {
+                        fields.add(currentField.toString());
+                        currentField.setLength(0);
+                    } else {
+                        currentField.append(c);
+                    }
+                }
+        }
+
+        if (inQuotes) {
+            throw new FileStorageException("Malformed CSV at line " + lineNumber + ": unclosed double quote.");
         }
 
         fields.add(currentField.toString());
