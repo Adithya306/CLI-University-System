@@ -141,17 +141,44 @@ public class UserCsvService {
 
             while ((line = reader.readLine()) != null) {
                 lineNumber++;
+
+                if (line.isBlank()) {   //Skip empty/whitespace lines
+                    continue;
+                }
+
                 List<String> columns = parseCsvLine(line, lineNumber);
+
+                if (columns.size() != 4) {      //Enforce exact 4 column structure
+                    throw new FileStorageException(
+                            "Invalid column count at line " + lineNumber + ": expected 4, got " + columns.size()
+                    );
+                }
 
                 // Ignore exported ID (column 0) so PostgreSQL sequence assigns a fresh primary key
                 String name = columns.get(1).trim();
                 String role = columns.get(2).trim();
                 String specialization = columns.get(3).trim();
 
+
+                if (name.isEmpty()) {       // Reject blank user names
+                    throw new FileStorageException("Missing user name at line " + lineNumber);
+                }
+
                 if ("Tutor".equalsIgnoreCase(role)) {
+
+                    if (specialization.isEmpty() || "-".equals(specialization)) {   //Require Tutor specialization
+                        throw new FileStorageException("Missing specialization for Tutor at line " + lineNumber);
+                    }
+
                     usersToImport.add(new Tutor(name, specialization));
-                } else {
+
+                } else if ("Student".equalsIgnoreCase(role)) {      //Explicitly match Student and reject invalid roles
                     usersToImport.add(new Student(name));
+
+                }else {
+                    throw new FileStorageException(
+                            "Unknown role '" + role + "' at line " + lineNumber + " (expected Student or Tutor)"
+                    );
                 }
             }
         } catch (IOException e) {
