@@ -1,3 +1,4 @@
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -117,5 +118,50 @@ public class UserCsvService {
 
         fields.add(currentField.toString());
         return fields;
+    }
+
+    public int importFromCsv(Path filePath) {
+        if (filePath == null) {
+            throw new IllegalArgumentException("File path cannot be null.");
+        }
+        if (!Files.exists(filePath) || !Files.isRegularFile(filePath)) {
+            throw new FileStorageException("CSV file not found: " + filePath);
+        }
+
+        List<Student> usersToImport = new ArrayList<>();
+
+        try (BufferedReader reader = Files.newBufferedReader(filePath, StandardCharsets.UTF_8)) {
+            String header = reader.readLine();
+            if (header == null) {
+                return 0;
+            }
+
+            String line;
+            int lineNumber = 1;
+
+            while ((line = reader.readLine()) != null) {
+                lineNumber++;
+                List<String> columns = parseCsvLine(line, lineNumber);
+
+                // Ignore exported ID (column 0) so PostgreSQL sequence assigns a fresh primary key
+                String name = columns.get(1).trim();
+                String role = columns.get(2).trim();
+                String specialization = columns.get(3).trim();
+
+                if ("Tutor".equalsIgnoreCase(role)) {
+                    usersToImport.add(new Tutor(name, specialization));
+                } else {
+                    usersToImport.add(new Student(name));
+                }
+            }
+        } catch (IOException e) {
+            throw new FileStorageException("Failed to read CSV file: " + filePath, e);
+        }
+
+        for (Student user : usersToImport) {
+            repository.save(user);
+        }
+
+        return usersToImport.size();
     }
 }
