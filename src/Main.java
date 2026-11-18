@@ -42,6 +42,7 @@ public class Main {
             System.out.println("8. Check user exist by ID");
             System.out.println("9. View total user count");
             System.out.println("10. Export users CSV file");
+            System.out.println("11. Export users CSV file");
             int choice = scanner.nextInt();
             scanner.nextLine();
 
@@ -317,6 +318,22 @@ public class Main {
                         System.out.println("Export Error: " + e.getMessage());
                     }
                 }
+
+                case 11 -> {
+                    System.out.print("Enter import file path (press Enter for exports/users.csv): ");
+                    String inputPath = scanner.nextLine().trim();
+                    if (inputPath.isEmpty()) {
+                        inputPath = "exports/users.csv";
+                    }
+
+                    try {
+                        int importedCount = csvService.importFromCsv(Path.of(inputPath));
+                        System.out.println("Successfully imported " + importedCount + " user(s) from " + inputPath);
+                    } catch (FileStorageException | DatabaseOperationException e) {
+                        System.out.println("Import Error: " + e.getMessage());
+                    }
+                }
+
                 default -> {
                     System.out.println("Invalid choice");
                 }
