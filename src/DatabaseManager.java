@@ -1,25 +1,40 @@
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 public class DatabaseManager {
 
-    private static final String URL = "jdbc:postgresql://localhost:5432/cli_university_db";
-    private static final String USER = "garukaadithya";
-    private static final String PASSWORD = "";
+
+    private static final Path CONFIG_PATH = Path.of("db.properties");
 
     private static HikariDataSource dataSource;
 
     static {
         try {
+
+            Properties props = loadProperties();
+
+            String url = props.getProperty("db.url");
+            String user = props.getProperty("db.user");
+            String password = props.getProperty("db.password");
+
+            if (url == null || url.isBlank() || user == null || user.isBlank() || password == null) {
+                throw new IllegalStateException("Invalid db.properties: 'db.url', 'db.user', and 'db.password' keys are required.");                                                                                    // <-- NEW
+            }
+
             HikariConfig config = new HikariConfig();
 
-            config.setJdbcUrl(URL);
-            config.setUsername(USER);
-            config.setPassword(PASSWORD);
+            config.setJdbcUrl(url.trim());
+            config.setUsername(user.trim());
+            config.setPassword(password);
 
             // Pool Sizing
             config.setMaximumPoolSize(10);        // Max 10 connections in pool
@@ -31,9 +46,22 @@ public class DatabaseManager {
             System.out.println("HikariCP Connection Pool initialized successfully.");
 
         } catch (Exception e) {
-            System.out.println("Failed to initialize HikariCP Connection Pool.");
-            e.printStackTrace();
+            System.err.println("Failed to initialize HikariCP Connection Pool: " + e.getMessage());
+            throw new ExceptionInInitializerError(e);
         }
+    }
+
+    private static Properties loadProperties() throws IOException {
+        if (!Files.exists(CONFIG_PATH) || !Files.isRegularFile(CONFIG_PATH)) {
+            throw new IOException(
+                    "Configuration file 'db.properties' not found. Copy 'db.properties.example' to 'db.properties'.");
+        }
+
+        Properties props = new Properties();
+        try (InputStream input = Files.newInputStream(CONFIG_PATH)) {
+            props.load(input);
+        }
+        return props;
     }
 
     // Exposes the initialized HikariCP connection pool (not a single connection)
