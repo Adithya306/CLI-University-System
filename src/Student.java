@@ -36,9 +36,9 @@ public class Student implements Comparable<Student> {
         return name;
     }
 
-    public void setName(String name){
-        this.name=name;
-    }
+//    public void setName(String name){
+//        this.name=name;
+//    }
 
     @Override
     public String toString(){
@@ -60,17 +60,21 @@ public class Student implements Comparable<Student> {
 
         // 3. Downcast and Compare: Compare the unique business identity field (studentID)
         Student student = (Student) other;
-        return this.studentID == student.studentID;
+        return this.studentID == student.studentID && Objects.equals(this.name, student.name);
     }
 
     @Override
     public int hashCode() {
         // Generates an integer hash code based exclusively on the studentID
-        return Objects.hash(studentID);
+        return Objects.hash(studentID, name);
     }
 
     @Override
     public int compareTo(Student other) {
-        return Integer.compare(this.studentID, other.studentID);
+        int idCompare = Integer.compare(studentID, other.studentID);
+        if(idCompare != 0){
+            return idCompare;
+        }
+        return this.name.compareTo(other.name);
     }
 }
