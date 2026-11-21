@@ -2,16 +2,23 @@ import java.util.Objects;
 
 public class Tutor extends Student {
 
-    private String specialization;
+    private final String specialization;
 
     public Tutor(String name, String specialization) {
         super(name);
-        this.specialization = specialization;
+        this.specialization = validateSpecialization(specialization);
     }
 
     public Tutor(int id, String name, String specialization) {
         super(id, name);
-        this.specialization = specialization;
+        this.specialization = validateSpecialization(specialization);
+    }
+
+    public String validateSpecialization(String specialization) {
+        if(specialization == null || specialization.isBlank()) {
+           throw new IllegalArgumentException("Tutor specialization cannot be null or empty");
+        }
+        return specialization.trim();
     }
 
     public String getSpecialization(){
