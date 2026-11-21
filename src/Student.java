@@ -2,22 +2,29 @@ import java.util.Objects;
 
 public class Student implements Comparable<Student> {
 
-    private String name;
-    private int studentID;
+    private final String name;
+    private final int studentID;
 
     public Student(String name){
-//        this.name=name;
-
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Student name cannot be null or empty.");
-        }
-        this.name = name.trim();
+        this.name = validateName(name);
+        this.studentID = 0;
 
     }
 
     public Student(int studentID, String name){
-        this.name=name;
+
+        if (studentID < 0) {
+            throw new IllegalArgumentException("Student ID cannot be negative.");
+        }
+        this.name=validateName(name);
         this.studentID=studentID;
+    }
+
+    private String validateName(String name){
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Student name cannot be null or empty.");
+        }
+        return name.trim();
     }
 
 
