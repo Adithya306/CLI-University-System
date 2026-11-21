@@ -14,7 +14,7 @@ public class Tutor extends Student {
         this.specialization = validateSpecialization(specialization);
     }
 
-    public String validateSpecialization(String specialization) {
+    private String validateSpecialization(String specialization) {
         if(specialization == null || specialization.isBlank()) {
            throw new IllegalArgumentException("Tutor specialization cannot be null or empty");
         }
