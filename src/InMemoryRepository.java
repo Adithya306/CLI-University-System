@@ -121,11 +121,24 @@ public class InMemoryRepository implements StudentRepository {
     //      *** Generic Repository Implementation (HashMap) ***
 
     private final Map<Integer, Student> studentsMap = new HashMap<>();
+    private int nextId = 1;
+
 
     @Override
     public void save(Student student) {
-        studentsMap.put(student.getStudentID(), student);
-        System.out.println("Student saved in RAM (HashMap).");
+        int assignedId = student.getStudentID();
+        Student persisted = student;
+
+        if (assignedId == 0) {
+            assignedId = nextId++;
+            persisted = (student instanceof Tutor tutor)
+                    ? new Tutor(assignedId, tutor.getName(), tutor.getSpecialization())
+                    : new Student(assignedId, student.getName());
+        } else {
+            nextId = Math.max(nextId, assignedId + 1);
+        }
+
+        studentsMap.put(assignedId, persisted);
     }
 
     @Override
@@ -147,14 +160,17 @@ public class InMemoryRepository implements StudentRepository {
 
     @Override
     public void updateById(Integer id, String newName) {
-        Student student = studentsMap.get(id);
 
-        if (student == null) {
+        Student existing = studentsMap.get(id);
+        if (existing == null) {
             throw new UserNotFoundException("User with ID " + id + " was not found in memory.");
         }
 
-        student.setName(newName);
-        System.out.println("User " + id + " updated to " + newName);
+        Student updated = (existing instanceof Tutor tutor)
+                ? new Tutor(id, newName, tutor.getSpecialization())
+                : new Student(id, newName);
+
+        studentsMap.put(id, updated);
     }
 
     @Override
