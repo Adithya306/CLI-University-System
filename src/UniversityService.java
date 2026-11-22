@@ -33,4 +33,16 @@ public class UniversityService {
             throw new IllegalArgumentException("ID must be a positive integer");
         }
     }
+
+    public Student registerStudent(String name){
+        Student student = new Student(name);
+        studentRepository.save(student);
+        return student;
+    }
+
+    public Tutor registerTutor(String name, String specialization){
+        Tutor tutor = new Tutor(name, specialization);
+        studentRepository.save(tutor);
+        return tutor;
+    }
 }
