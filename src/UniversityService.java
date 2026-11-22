@@ -45,4 +45,19 @@ public class UniversityService {
         studentRepository.save(tutor);
         return tutor;
     }
+
+    public void updateUser(int id, String newName){
+
+        validateID(id);
+        if (newName == null || newName.isEmpty()) {
+            throw new IllegalArgumentException("New name cannot be null or empty");
+        }
+        studentRepository.updateById(id, newName.trim());
+    }
+
+    public void deleteById(int id){
+        validateID(id);
+        studentRepository.deleteById(id);
+    }
+
 }
