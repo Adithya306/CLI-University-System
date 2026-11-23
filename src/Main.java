@@ -18,8 +18,10 @@ public class Main {
         // 1. DatabaseManager.getDataSource() -> Fetches the active HikariCP connection pool.
         // 2. new PostgresStudentRepository(...) -> Passes the pool up to AbstractJdbcRepository via super(dataSource).
         // 3. StudentRepository repository = ... -> Programs to the interface so Main stays blind to JDBC/SQL details.
+
         StudentRepository repository = new PostgresStudentRepository(DatabaseManager.getDataSource());
         UserCsvService csvService = new UserCsvService(repository);
+        UniversityService universityService = new UniversityService(repository);
 
 //        students.add(firstStudent);
 //        students.add(secondStudent);
@@ -43,8 +45,16 @@ public class Main {
             System.out.println("9. View total user count");
             System.out.println("10. Export users CSV file");
             System.out.println("11. Import users CSV file");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+
+            int choice;
+            try {
+                choice = scanner.nextInt();
+                scanner.nextLine();
+            } catch (InputMismatchException e) {
+                System.out.println("Error: Please enter a valid menu number");
+                scanner.nextLine();
+                continue;
+            }
 
 //            if(choice == 3){
 //                break;
@@ -73,12 +83,14 @@ public class Main {
 
 //                        students.add(new Student(name, id));
 
-                        repository.save(new Student(name));
+//                        repository.save(new Student(name));
 
+                        universityService.registerStudent(name);
                         System.out.println("Student Added successfully");
-                    } catch (Exception e){
-                        System.out.println("Error: Invalid input. Student ID must be a number.");
-                        scanner.nextLine();
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Validation Error: " + e.getMessage());
+                    } catch (DatabaseOperationException e) {
+                        System.out.println("Database Error: " + e.getMessage());
                     }
 
                 }
@@ -118,7 +130,8 @@ public class Main {
 
                     // add student formatter method to generic method call
                     try {
-                        List<Student> users = repository.findAll();
+//                        List<Student> users = repository.findAll();
+                        List<Student> users = universityService.getAllStudents();
                         Collections.sort(users);
 
                         System.out.println("\n--- Registered Users ---");
@@ -147,11 +160,13 @@ public class Main {
                         System.out.println("Enter Tutor Specialization");
                         String specialization = scanner.nextLine();
 
-                        repository.save(new Tutor(name, specialization));
-
-                    } catch (Exception e){
-                        System.out.println("Error: Invalid input");
-                        scanner.nextLine();
+//                        repository.save(new Tutor(name, specialization));
+                        universityService.registerTutor(name, specialization);
+                        System.out.println("Tutor Added successfully");
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Validation Error: " + e.getMessage());
+                    } catch (DatabaseOperationException e) {
+                        System.out.println("Database Error: " + e.getMessage());
                     }
 
                 }
@@ -177,7 +192,8 @@ public class Main {
                         int searchId = scanner.nextInt();
                         scanner.nextLine();
 
-                        Student foundUser = repository.findById(searchId);
+//                        Student foundUser = repository.findById(searchId);
+                        Student foundUser = universityService.findByID(searchId);
                         System.out.println("\n--- User Found ---");
                         System.out.println(foundUser);
 
@@ -218,7 +234,9 @@ public class Main {
                         int deleteId = scanner.nextInt();
                         scanner.nextLine();
 
-                        repository.deleteById(deleteId);
+//                        repository.deleteById(deleteId);
+                        universityService.deleteById(deleteId);
+                        System.out.println("User deleted successfully");
 
                     } catch (UserNotFoundException e) {
                         System.out.println("Error: " + e.getMessage());
@@ -262,7 +280,10 @@ public class Main {
                         System.out.println("Enter New name");
                         String newName = scanner.nextLine();
 
-                        repository.updateById(updateId, newName);
+//                        repository.updateById(updateId, newName);
+                        universityService.updateUser(updateId, newName);
+                        System.out.println("User Updated successfully");
+
                     } catch (UserNotFoundException e) {
                         System.out.println("Error: " + e.getMessage());
                     } catch (DatabaseOperationException e) {
@@ -281,7 +302,8 @@ public class Main {
                         scanner.nextLine();
 
                         //as this method return boolean value we need to store that into a variable and display clearly
-                        boolean exists = repository.existsById(checkId);
+//                        boolean exists = repository.existsById(checkId);
+                        boolean exists = universityService.existsByID(checkId);
                         if (exists) {
                             System.out.println("User with ID " + checkId + " exists in the system.");
                         } else {
@@ -297,7 +319,8 @@ public class Main {
 
                 case 9 ->{
                     try {
-                        long userCount = repository.count();
+//                        long userCount = repository.count();
+                        long userCount = universityService.getTotalUserCount();
                         System.out.println("Total registered users: " + userCount);
                     } catch (DatabaseOperationException e) {
                         System.out.println("Database Error: " + e.getMessage());
