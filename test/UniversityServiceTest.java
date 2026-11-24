@@ -1,6 +1,8 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class UniversityServiceTest {
@@ -30,5 +32,14 @@ class UniversityServiceTest {
         assertInstanceOf(Tutor.class, saved);
         assertEquals(new Tutor(1,  "Nipun", "Maths"), saved);
 
+    }
+
+    @Test
+    void getAllStudents_returnsAllRegisteredUsers() {
+        universityService.registerStudent("Nuwan");
+        universityService.registerTutor("Nimal", "English");
+
+        List<Student> users = universityService.getAllStudents();
+        assertEquals(2, users.size());
     }
 }
