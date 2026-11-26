@@ -42,4 +42,12 @@ class UniversityServiceTest {
         List<Student> users = universityService.getAllStudents();
         assertEquals(2, users.size());
     }
+
+    @Test
+    void existsByID_returnsTrueWhenPresentAndFalseWhenMissing() {
+        universityService.registerStudent("Kasun");
+
+        assertTrue(universityService.existsByID(1));
+        assertFalse(universityService.existsByID(99));
+    }
 }
