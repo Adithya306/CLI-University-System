@@ -50,4 +50,32 @@ class UniversityServiceTest {
         assertTrue(universityService.existsByID(1));
         assertFalse(universityService.existsByID(99));
     }
+
+    @Test
+    void deleteByID_removesExistingUserAndThrowsForInvalidOrMissingInput(){
+
+        universityService.registerStudent("saman");
+        universityService.registerTutor("Nipun", "English");
+
+        Student savedStu = universityService.findByID(1);
+
+        Student savedTut = universityService.findByID(2);
+        assertInstanceOf(Tutor.class, savedTut);
+
+        assertEquals(new Student(1, "saman"), savedStu);
+        assertEquals(new Tutor(2,"Nipun", "English"), savedTut);
+
+        universityService.deleteById(1);
+        universityService.deleteById(2);
+
+        assertFalse(universityService.existsByID(1));
+        assertFalse(universityService.existsByID(2));
+        assertEquals(0, universityService.getTotalUserCount());
+
+        assertThrows(UserNotFoundException.class, () -> universityService.findByID(1));
+        assertThrows(UserNotFoundException.class, () -> universityService.deleteById(99));
+        assertThrows(IllegalArgumentException.class, () -> universityService.findByID(0));
+        assertThrows(IllegalArgumentException.class, () -> universityService.registerStudent("   "));
+
+    }
 }
