@@ -78,4 +78,19 @@ class UniversityServiceTest {
         assertThrows(IllegalArgumentException.class, () -> universityService.registerStudent("   "));
 
     }
+
+    @Test
+    void updateUser_updatesNameAndPreservesTutorSpecialization() {
+        universityService.registerStudent("Kasun");
+        universityService.registerTutor("Nimal", "Databases");
+
+        universityService.updateUser(1, "Kasun Perera");
+        universityService.updateUser(2, "Nimal Silva");
+
+        assertEquals(new Student(1, "Kasun Perera"), universityService.findByID(1));
+
+        Student updatedTutor = universityService.findByID(2);
+        assertInstanceOf(Tutor.class, updatedTutor);
+        assertEquals(new Tutor(2, "Nimal Silva", "Databases"), updatedTutor);
+    }
 }
