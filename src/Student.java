@@ -75,6 +75,10 @@ public class Student implements Comparable<Student> {
         if(idCompare != 0){
             return idCompare;
         }
-        return this.name.compareTo(other.name);
+        int nameCompare = this.name.compareTo(other.name);
+        if(nameCompare != 0){
+            return nameCompare;
+        }
+        return (other instanceof Tutor) ?-1:0;
     }
 }
