@@ -43,4 +43,23 @@ public class Tutor extends Student {
     public int hashCode() {
         return Objects.hash(super.hashCode(), specialization);
     }
+
+    @Override
+    public int compareTo(Student other){
+        int idCompare = Integer.compare(this.getStudentID(), other.getStudentID());
+        if(idCompare != 0){
+            return idCompare;
+        }
+
+        int nameCompare = this.getName().compareTo(other.getName());
+        if(nameCompare != 0){
+            return nameCompare;
+        }
+
+        if (other instanceof Tutor otherTutor) {
+            return this.specialization.compareTo(otherTutor.specialization);
+        }
+        // Tutor sorts after a plain Student with the same ID and name
+        return 1;
+    }
 }
